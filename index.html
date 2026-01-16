@@ -134,7 +134,7 @@
                     <div class="text-center space-y-4 py-4">
                         <p class="text-yellow-500 text-xl tracking-[0.4em] font-black mb-8">HARTA KARTUN AJAIB4D</p>
                         
-                    <div class="flex justify-center mb-4">
+   <div class="flex justify-center mb-4">
   <div class="mystery-stage">
     <div class="mystery-cube" aria-label="Mystery Box 3D">
       <div class="face front">
@@ -148,6 +148,59 @@
     </div>
   </div>
 </div>
+/* Stage: perspective + floating */
+.mystery-stage{
+  perspective: 1100px;
+  animation: floatBounce 4s ease-in-out infinite;
+}
+
+/* Cube container */
+.mystery-cube{
+  width: 128px;
+  height: 128px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-18deg) rotateY(25deg);
+  animation: rotateCube 6s linear infinite;
+  filter: drop-shadow(0 28px 45px rgba(0,0,0,.45));
+}
+
+/* Shared face styles */
+.mystery-cube .face{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  border: 2px solid rgba(148,163,184,.55);
+  background: linear-gradient(135deg, #374151, #111827);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.35),
+    inset 0 18px 30px rgba(255,255,255,.06);
+  backface-visibility: hidden;
+}
+
+/* "Metal edge" highlight */
+.mystery-cube .face::before{
+  content:"";
+  position:absolute;
+  inset: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  pointer-events:none;
+}
+
+/* Front icon */
+.mystery-cube .mark{
+  font-size: 64px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #06b6d4, #0891b2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 18px rgba(6,182,212,.45);
+  filter: drop-shadow(0 0 22px rgba(6,182,212,.75));
+}
+
 /* Depth (half of size = 64px) */
 .mystery-cube .front  { transform: translateZ(64px); }
 .mystery-cube .back   { transform: rotateY(180deg) translateZ(64px); }
@@ -162,6 +215,41 @@
 .mystery-cube .right,
 .mystery-cube .left{
   background: linear-gradient(135deg, #2f3a4a, #0b1220);
+}
+
+.mystery-cube .top{
+  background: linear-gradient(135deg, #4b5563, #1f2937);
+}
+
+.mystery-cube .bottom{
+  background: linear-gradient(135deg, #1f2937, #0b1220);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.45),
+    inset 0 30px 40px rgba(0,0,0,.35);
+}
+
+/* Shadow “ground” for realism */
+.mystery-stage::after{
+  content:"";
+  display:block;
+  width: 140px;
+  height: 26px;
+  margin: 14px auto 0;
+  background: radial-gradient(closest-side, rgba(0,0,0,.55), transparent 70%);
+  filter: blur(2px);
+  transform: translateZ(-1px);
+  opacity: .9;
+}
+
+/* Animations */
+@keyframes rotateCube{
+  0%   { transform: rotateX(-18deg) rotateY(0deg); }
+  100% { transform: rotateX(-18deg) rotateY(360deg); }
+}
+
+@keyframes floatBounce{
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-10px); }
 }
                         <div class="bg-black/50 border border-yellow-500/30 rounded-xl p-4 mb-4">
                             <p class="text-base font-bold text-yellow-400 mb-1">Selamat Datang</p>
@@ -288,6 +376,7 @@
     </script>
 </body>
 </html>
+
 
 
 
