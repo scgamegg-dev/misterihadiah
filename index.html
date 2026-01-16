@@ -14,6 +14,11 @@
         .animate-marquee {
             display: inline-block;
             animation: marquee 40s linear infinite;
+            @keyframes rotateCube{
+  0%   { transform: rotateX(-20deg) rotateY(0deg); }
+  50%  { transform: rotateX(-12deg) rotateY(180deg); }
+  100% { transform: rotateX(-20deg) rotateY(360deg); }
+}
         }
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -423,3 +428,4 @@
     </script>
 </body>
 </html>
+
