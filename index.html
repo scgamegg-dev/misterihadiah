@@ -188,7 +188,16 @@
         function renderWelcome() {
             return `
                 <div class="text-center relative z-10">
-                    <div class="mb-8 bg-gradient-to-br from-gray-800 to-black rounded-3xl p-8 shadow-2xl animate-glow border-4 border-yellow-500">
+                    <div class="mb-8 rounded-3xl p-[2px] glass-border shadow-2xl animate-glow">
+  <div class="rounded-3xl p-8 bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md">
+    <div class="text-6xl md:text-8xl font-hero tracking-widest">
+      <span class="text-gold-gradient drop-shadow-[0_0_18px_rgba(250,204,21,.35)]">AJAIB</span>
+      <span class="text-white/90">4D</span>
+    </div>
+    <p class="font-body text-white/70 mt-3 tracking-wide">HARTA KARUN • SPECIAL EVENT</p>
+  </div>
+</div>
+
                         <div class="text-6xl md:text-8xl font-bold">
                             <span class="text-yellow-500">AJAIB</span><span class="text-white">4D</span>
                         </div>
@@ -422,4 +431,5 @@
     </script>
 </body>
 </html>
+
 
