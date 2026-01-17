@@ -1,54 +1,31 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARAH HARTA AJAIB4D</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        .animate-marquee {
-            display: inline-block;
-            animation: marquee 40s linear infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(180deg); }
-        }
-        .animate-float {
-            animation: float 8s ease-in-out infinite;
-        }
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.6), 0 0 60px rgba(234, 179, 8, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(234, 179, 8, 0.8), 0 0 100px rgba(234, 179, 8, 0.5); }
-        }
-        .animate-glow {
-            animation: glow 2s ease-in-out infinite;
-        }
-        @keyframes pulse-gold {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .animate-pulse-gold {
-            animation: pulse-gold 2s ease-in-out infinite;
-        }
-        @keyframes bounce-chat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .animate-bounce-chat {
-            animation: bounce-chat 2s ease-in-out infinite;
-        }
-        .sparkle {
-            position: absolute;
-            font-size: 20px;
-            opacity: 0.3;
-            color: #eab308;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .font-hero { font-family: "Orbitron", system-ui, sans-serif; }
+  .font-body { font-family: "Inter", system-ui, sans-serif; }
+
+  /* teks gradient yang keren */
+  .text-gold-gradient{
+    background: linear-gradient(90deg, #fbbf24, #fde68a, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* border transparan + glow halus */
+  .glass-border{
+    background: linear-gradient(135deg,
+      rgba(250, 204, 21, .55),
+      rgba(250, 204, 21, .10),
+      rgba(255, 255, 255, .08)
+    );
+  }
+</style>
 </head>
 <body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen overflow-x-hidden">
     
@@ -188,16 +165,9 @@
         function renderWelcome() {
             return `
                 <div class="text-center relative z-10">
-                    <div class="mb-8 rounded-3xl p-[2px] glass-border shadow-2xl animate-glow">
+                <div class="mb-8 rounded-3xl p-[2px] glass-border shadow-2xl animate-glow">
   <div class="rounded-3xl p-8 bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md">
     <div class="text-6xl md:text-8xl font-hero tracking-widest">
-      <span class="text-gold-gradient drop-shadow-[0_0_18px_rgba(250,204,21,.35)]">AJAIB</span>
-      <span class="text-white/90">4D</span>
-    </div>
-    <p class="font-body text-white/70 mt-3 tracking-wide">HARTA KARUN • SPECIAL EVENT</p>
-  </div>
-</div>
-
                         <div class="text-6xl md:text-8xl font-bold">
                             <span class="text-yellow-500">AJAIB</span><span class="text-white">4D</span>
                         </div>
@@ -431,5 +401,6 @@
     </script>
 </body>
 </html>
+
 
 
