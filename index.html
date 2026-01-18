@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mystery Box - Claim Hadiah Anda</title>
+    <title>Doorprize Mystery - Pilih Kartu Anda</title>
     <style>
         * {
             margin: 0;
@@ -14,13 +14,12 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #000000 100%);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Animated Background Particles */
         .particles {
             position: fixed;
             top: 0;
@@ -45,215 +44,116 @@
                 transform: translateY(0) translateX(0);
                 opacity: 0;
             }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
             100% {
                 transform: translateY(-100vh) translateX(50px);
                 opacity: 0;
             }
         }
 
-        /* Container */
         .container {
             position: relative;
             z-index: 10;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Header */
-        header {
+        .username-screen {
             text-align: center;
-            padding: 40px 20px;
-            animation: fadeInDown 1s ease;
+            animation: fadeIn 1s ease;
         }
 
-        header h1 {
-            font-size: 3.5em;
+        .username-screen.hidden {
+            display: none;
+        }
+
+        .logo {
+            font-size: 6em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 30px rgba(255,215,0,0.8));
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .username-screen h1 {
+            font-size: 4em;
             background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-shadow: 0 0 30px rgba(255,215,0,0.5);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-weight: 900;
             letter-spacing: 3px;
         }
 
-        header p {
+        .username-screen p {
             color: rgba(255,255,255,0.8);
-            font-size: 1.2em;
-            letter-spacing: 2px;
-        }
-
-        /* Main Content */
-        .main-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 50px;
-            margin-top: 50px;
-        }
-
-        /* 3D Box Container */
-        .box-container {
-            perspective: 1000px;
-            animation: fadeInLeft 1s ease;
-        }
-
-        .mystery-box {
-            width: 300px;
-            height: 300px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotate3d 10s infinite linear;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .mystery-box:hover {
-            animation-play-state: paused;
-            transform: scale(1.1);
-        }
-
-        @keyframes rotate3d {
-            0% {
-                transform: rotateY(0deg) rotateX(0deg);
-            }
-            100% {
-                transform: rotateY(360deg) rotateX(360deg);
-            }
-        }
-
-        .box-face {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, 
-                rgba(255,215,0,0.3), 
-                rgba(255,237,78,0.2), 
-                rgba(255,215,0,0.3));
-            border: 3px solid rgba(255,215,0,0.6);
-            backdrop-filter: blur(10px);
-            box-shadow: 
-                0 0 30px rgba(255,215,0,0.4),
-                inset 0 0 30px rgba(255,215,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4em;
-        }
-
-        .front  { transform: rotateY(0deg) translateZ(150px); }
-        .back   { transform: rotateY(180deg) translateZ(150px); }
-        .right  { transform: rotateY(90deg) translateZ(150px); }
-        .left   { transform: rotateY(-90deg) translateZ(150px); }
-        .top    { transform: rotateX(90deg) translateZ(150px); }
-        .bottom { transform: rotateX(-90deg) translateZ(150px); }
-
-        /* Claim Section */
-        .claim-section {
-            background: linear-gradient(135deg, 
-                rgba(255,215,0,0.1), 
-                rgba(255,237,78,0.05));
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(255,215,0,0.3);
-            border-radius: 20px;
-            padding: 50px;
-            max-width: 500px;
-            box-shadow: 
-                0 0 50px rgba(255,215,0,0.3),
-                inset 0 0 50px rgba(255,215,0,0.1);
-            animation: fadeInRight 1s ease;
-        }
-
-        .claim-section h2 {
-            color: #ffd700;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(255,215,0,0.5);
-        }
-
-        .prize-info {
-            background: rgba(255,215,0,0.1);
-            border: 1px solid rgba(255,215,0,0.3);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .prize-info h3 {
-            color: #fff;
-            font-size: 1.5em;
-            margin-bottom: 15px;
-        }
-
-        .prize-value {
-            font-size: 3em;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 1.3em;
+            margin-bottom: 40px;
             letter-spacing: 1px;
         }
 
-        .input-group input {
+        .username-form {
+            background: linear-gradient(135deg, 
+                rgba(0,0,0,0.8), 
+                rgba(20,20,20,0.6));
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255,215,0,0.5);
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 0 50px rgba(255,215,0,0.3);
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .input-wrapper input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid rgba(255,215,0,0.3);
-            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border: 2px solid rgba(255,215,0,0.5);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1em;
+            border-radius: 15px;
+            color: #ffd700;
+            font-size: 1.2em;
+            text-align: center;
             transition: all 0.3s;
         }
 
-        .input-group input:focus {
+        .input-wrapper input:focus {
             outline: none;
             border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255,215,0,0.3);
-            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 30px rgba(255,215,0,0.5);
+            background: rgba(0,0,0,0.8);
         }
 
-        .claim-button {
+        .input-wrapper input::placeholder {
+            color: rgba(255,215,0,0.5);
+        }
+
+        .start-button {
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
             border: none;
             border-radius: 15px;
-            color: #1a1a2e;
-            font-size: 1.3em;
+            color: #000;
+            font-size: 1.5em;
             font-weight: 900;
             cursor: pointer;
             letter-spacing: 2px;
@@ -263,7 +163,7 @@
             overflow: hidden;
         }
 
-        .claim-button::before {
+        .start-button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -274,65 +174,273 @@
             transition: left 0.5s;
         }
 
-        .claim-button:hover::before {
+        .start-button:hover::before {
             left: 100%;
         }
 
-        .claim-button:hover {
+        .start-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(255,215,0,0.6);
         }
 
-        .claim-button:active {
-            transform: translateY(0);
+        .game-screen {
+            display: none;
+            width: 100%;
+            animation: fadeIn 1s ease;
         }
 
-        /* Features */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-top: 80px;
-            animation: fadeInUp 1s ease;
+        .game-screen.active {
+            display: block;
         }
 
-        .feature-card {
-            background: linear-gradient(135deg, 
-                rgba(255,215,0,0.1), 
-                rgba(255,237,78,0.05));
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(255,215,0,0.3);
-            border-radius: 20px;
-            padding: 35px;
+        .game-header {
             text-align: center;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(255,215,0,0.4);
-            border-color: #ffd700;
-        }
-
-        .feature-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(255,215,0,0.5));
-        }
-
-        .feature-card h3 {
+        .welcome-text {
             color: #ffd700;
-            font-size: 1.5em;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .game-header h2 {
+            color: #fff;
+            font-size: 2.5em;
             margin-bottom: 15px;
         }
 
-        .feature-card p {
+        .instruction {
             color: rgba(255,255,255,0.8);
-            line-height: 1.6;
+            font-size: 1.2em;
         }
 
-        /* Success Modal */
+        .shuffle-status {
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-top: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .shuffle-status.hidden {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            perspective: 1000px;
+            height: 350px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .card.shuffling {
+            animation: cardShuffle 0.5s ease-in-out;
+        }
+
+        @keyframes cardShuffle {
+            0%, 100% { transform: translateY(0) rotateZ(0deg); }
+            25% { transform: translateY(-30px) rotateZ(-10deg); }
+            75% { transform: translateY(-30px) rotateZ(10deg); }
+        }
+
+        .card:hover:not(.flipped) {
+            transform: translateY(-10px);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, 
+                #1a1a1a 0%,
+                #000000 50%,
+                #1a1a1a 100%);
+            border: 3px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-front::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255,215,0,0.1) 50%,
+                transparent 70%
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .card-front .card-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255,215,0,0.8));
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-front .card-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-front .card-text {
+            color: rgba(255,215,0,0.8);
+            font-size: 1.1em;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, 
+                #0a0a0a 0%,
+                #1a1a1a 50%,
+                #0a0a0a 100%);
+            border: 3px solid #ffd700;
+            transform: rotateY(180deg);
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, 
+                rgba(255,215,0,0.2) 0%,
+                transparent 70%);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .prize-icon {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 30px rgba(255,215,0,0.8));
+            position: relative;
+            z-index: 1;
+        }
+
+        .prize-name {
+            color: #ffd700;
+            font-size: 1.6em;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255,215,0,0.8);
+            position: relative;
+            z-index: 1;
+            padding: 0 15px;
+        }
+
+        .prize-value {
+            color: #fff;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .claim-prize-button {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 1.2em;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .claim-prize-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.6);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            z-index: 100;
+        }
+
+        .confetti.active {
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -340,7 +448,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
             justify-content: center;
@@ -349,21 +457,39 @@
 
         .modal-content {
             background: linear-gradient(135deg, 
-                rgba(255,215,0,0.2), 
-                rgba(255,237,78,0.1));
+                #0a0a0a 0%,
+                #1a1a1a 50%,
+                #0a0a0a 100%);
             backdrop-filter: blur(30px);
             border: 3px solid #ffd700;
             border-radius: 30px;
             padding: 60px;
             text-align: center;
-            max-width: 500px;
-            box-shadow: 0 0 100px rgba(255,215,0,0.6);
-            animation: modalBounce 0.5s ease;
+            max-width: 600px;
+            box-shadow: 0 0 100px rgba(255,215,0,0.8);
+            animation: modalBounce 0.6s ease;
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center,
+                rgba(255,215,0,0.15) 0%,
+                transparent 70%);
+            border-radius: 30px;
+            z-index: 0;
+        }
+
+        .modal-content > * {
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes modalBounce {
             0% {
-                transform: scale(0.5);
+                transform: scale(0.3);
                 opacity: 0;
             }
             60% {
@@ -375,215 +501,203 @@
             }
         }
 
+        .modal-icon {
+            font-size: 8em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 40px rgba(255,215,0,1));
+        }
+
         .modal-content h2 {
             color: #ffd700;
-            font-size: 3em;
+            font-size: 3.5em;
             margin-bottom: 20px;
             text-shadow: 0 0 30px rgba(255,215,0,0.8);
         }
 
-        .modal-content p {
+        .modal-username {
             color: #fff;
-            font-size: 1.3em;
+            font-size: 2em;
             margin-bottom: 30px;
         }
 
-        .close-modal {
+        .modal-prize {
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,215,0,0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .modal-prize-name {
+            color: #ffd700;
+            font-size: 2.5em;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .modal-prize-desc {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.3em;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .modal-button {
             padding: 15px 40px;
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             border: none;
             border-radius: 10px;
-            color: #1a1a2e;
-            font-size: 1.1em;
+            color: #000;
+            font-size: 1.2em;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .close-modal:hover {
+        .modal-button:hover {
             transform: scale(1.1);
             box-shadow: 0 10px 30px rgba(255,215,0,0.6);
         }
 
-        /* Animations */
-        @keyframes fadeInDown {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-50px);
+                transform: scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
 
-        @keyframes fadeInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            header h1 {
+            .username-screen h1 {
                 font-size: 2.5em;
             }
 
-            .main-content {
-                flex-direction: column;
+            .logo {
+                font-size: 4em;
             }
 
-            .mystery-box {
-                width: 250px;
-                height: 250px;
-            }
-
-            .box-face {
-                width: 250px;
-                height: 250px;
-            }
-
-            .front  { transform: rotateY(0deg) translateZ(125px); }
-            .back   { transform: rotateY(180deg) translateZ(125px); }
-            .right  { transform: rotateY(90deg) translateZ(125px); }
-            .left   { transform: rotateY(-90deg) translateZ(125px); }
-            .top    { transform: rotateX(90deg) translateZ(125px); }
-            .bottom { transform: rotateX(-90deg) translateZ(125px); }
-
-            .claim-section {
+            .username-form {
                 padding: 30px;
+            }
+
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .card {
+                height: 300px;
+            }
+
+            .game-header h2 {
+                font-size: 1.8em;
+            }
+
+            .welcome-text {
+                font-size: 1.5em;
             }
 
             .modal-content {
                 padding: 40px 30px;
                 margin: 20px;
             }
+
+            .modal-icon {
+                font-size: 5em;
+            }
+
+            .modal-content h2 {
+                font-size: 2.5em;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .card-front .card-icon {
+                font-size: 4em;
+            }
+
+            .prize-icon {
+                font-size: 3.5em;
+            }
+
+            .prize-name {
+                font-size: 1.3em;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Particles Background -->
     <div class="particles" id="particles"></div>
 
     <div class="container">
-        <!-- Header -->
-        <header>
-            <h1>✨ MYSTERY BOX ✨</h1>
-            <p>HADIAH MEWAH MENANTI ANDA</p>
-        </header>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- 3D Mystery Box -->
-            <div class="box-container">
-                <div class="mystery-box" id="mysteryBox">
-                    <div class="box-face front">🎁</div>
-                    <div class="box-face back">💎</div>
-                    <div class="box-face right">⭐</div>
-                    <div class="box-face left">👑</div>
-                    <div class="box-face top">✨</div>
-                    <div class="box-face bottom">🏆</div>
+        <div class="username-screen" id="usernameScreen">
+            <div class="logo">🎁</div>
+            <h1>DOORPRIZE AJAIB4D</h1>
+            <p>Masukkan username kamu di bawah ini</p>
+            
+            <div class="username-form">
+                <div class="input-wrapper">
+                    <input type="text" id="usernameInput" placeholder="Masukkan Username Anda" maxlength="20">
                 </div>
-            </div>
-
-            <!-- Claim Form -->
-            <div class="claim-section">
-                <h2>🎊 CLAIM HADIAH 🎊</h2>
-                
-                <div class="prize-info">
-                    <h3>NILAI HADIAH ANDA</h3>
-                    <div class="prize-value">Rp 10.000.000</div>
-                </div>
-
-                <form id="claimForm">
-                    <div class="input-group">
-                        <label>Nama Lengkap</label>
-                        <input type="text" id="name" placeholder="Masukkan nama lengkap Anda" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Email</label>
-                        <input type="email" id="email" placeholder="email@example.com" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Nomor Telepon</label>
-                        <input type="tel" id="phone" placeholder="+62 xxx xxxx xxxx" required>
-                    </div>
-
-                    <button type="submit" class="claim-button">
-                        🎁 CLAIM SEKARANG 🎁
-                    </button>
-                </form>
+                <button class="start-button" id="startButton">
+                    👉 MULAI SEKARANG 👈
+                </button>
             </div>
         </div>
 
-        <!-- Features -->
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h3>100% Aman</h3>
-                <p>Data Anda dilindungi dengan enkripsi tingkat tinggi</p>
+        <div class="game-screen" id="gameScreen">
+            <div class="game-header">
+                <div class="welcome-text">Selamat Datang, <span id="displayUsername"></span>!</div>
+                <h2>🎯 Pilih Satu Kartu Hadiah Anda 🎯</h2>
+                <p class="instruction">✨ Kartu sedang diacak... ✨</p>
+                <p class="shuffle-status" id="shuffleStatus">🔄 Mengacak kartu...</p>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Proses Cepat</h3>
-                <p>Hadiah akan diproses dalam waktu 24 jam</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Terpercaya</h3>
-                <p>Lebih dari 10,000+ pemenang telah menerima hadiah</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h3>Hadiah Mewah</h3>
-                <p>Hadiah senilai jutaan rupiah menanti Anda</p>
-            </div>
+            <div class="cards-container" id="cardsContainer"></div>
         </div>
     </div>
 
-    <!-- Success Modal -->
     <div class="modal" id="successModal">
         <div class="modal-content">
-            <h2>🎉 SELAMAT! 🎉</h2>
-            <p>Claim hadiah Anda berhasil!<br>Kami akan menghubungi Anda segera.</p>
-            <button class="close-modal" onclick="closeModal()">TUTUP</button>
+            <div class="modal-icon">🎉</div>
+            <h2>SELAMAT!</h2>
+            <div class="modal-username">
+                <span id="modalUsername"></span>
+            </div>
+            <div class="modal-prize">
+                <div class="modal-prize-name" id="modalPrizeName"></div>
+                <div class="modal-prize-desc" id="modalPrizeDesc"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button" id="backButton">🏠 KEMBALI KE AWAL</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Create particles
+        const prizes = [
+            { icon: '💵', name: 'Uang Tunai Rp 100.000', value: 'Rp 100.000', desc: 'Uang tunai senilai Rp 100.000' },
+            { icon: '💰', name: 'Uang Tunai Rp 200.000', value: 'Rp 200.000', desc: 'Uang tunai senilai Rp 200.000' },
+            { icon: '📱', name: 'iPhone 17 Pro Max', value: 'iPhone 17 Pro Max', desc: 'Smartphone flagship terbaru Apple' },
+            { icon: '🏍️', name: 'Motor Yamaha NMAX 2026', value: 'NMAX 2026', desc: 'Motor skutik premium Yamaha NMAX 2026' },
+            { icon: '💵', name: 'Uang Tunai Rp 100.000', value: 'Rp 100.000', desc: 'Uang tunai senilai Rp 100.000' },
+            { icon: '💰', name: 'Uang Tunai Rp 200.000', value: 'Rp 200.000', desc: 'Uang tunai senilai Rp 200.000' },
+            { icon: '📱', name: 'iPhone 17 Pro Max', value: 'iPhone 17 Pro Max', desc: 'Smartphone flagship terbaru Apple' },
+            { icon: '🏍️', name: 'Motor Yamaha NMAX 2026', value: 'NMAX 2026', desc: 'Motor skutik premium Yamaha NMAX 2026' }
+        ];
+
+        let username = '';
+        let selectedPrize = null;
+
         const particlesContainer = document.getElementById('particles');
         for (let i = 0; i < 50; i++) {
             const particle = document.createElement('div');
@@ -594,42 +708,157 @@
             particlesContainer.appendChild(particle);
         }
 
-        // Mystery box click animation
-        const mysteryBox = document.getElementById('mysteryBox');
-        mysteryBox.addEventListener('click', function() {
-            this.style.animation = 'none';
-            setTimeout(() => {
-                this.style.animation = 'rotate3d 10s infinite linear';
-            }, 10);
+        document.getElementById('startButton').addEventListener('click', function() {
+            const usernameInput = document.getElementById('usernameInput');
+            username = usernameInput.value.trim();
+
+            if (username === '') {
+                alert('Silakan masukkan username Anda!');
+                return;
+            }
+
+            document.getElementById('usernameScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('active');
+            document.getElementById('displayUsername').textContent = username;
+
+            createCards();
+            shuffleCards();
         });
 
-        // Form submission
-        const claimForm = document.getElementById('claimForm');
-        const successModal = document.getElementById('successModal');
+        function createCards() {
+            const cardsContainer = document.getElementById('cardsContainer');
+            cardsContainer.innerHTML = '';
 
-        claimForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form values
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
+            const shuffledPrizes = [...prizes].sort(() => Math.random() - 0.5);
 
-            // Show success modal
-            successModal.style.display = 'flex';
+            for (let i = 0; i < 8; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.prize = JSON.stringify(shuffledPrizes[i]);
 
-            // Reset form
-            claimForm.reset();
-        });
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-icon">🎴</div>
+                            <div class="card-number">${i + 1}</div>
+                            <div class="card-text">Mystery Card</div>
+                        </div>
+                        <div class="card-back">
+                            <div class="prize-icon">${shuffledPrizes[i].icon}</div>
+                            <div class="prize-name">${shuffledPrizes[i].name}</div>
+                            <div class="prize-value">${shuffledPrizes[i].value}</div>
+                            <button class="claim-prize-button">🏆 CLAIM HADIAH</button>
+                        </div>
+                    </div>
+                `;
 
-        function closeModal() {
-            successModal.style.display = 'none';
+                cardsContainer.appendChild(card);
+            }
         }
 
-        // Close modal when clicking outside
-        successModal.addEventListener('click', function(e) {
-            if (e.target === successModal) {
-                closeModal();
+        function shuffleCards() {
+            const cards = document.querySelectorAll('.card');
+            const shuffleStatus = document.getElementById('shuffleStatus');
+            const instruction = document.querySelector('.instruction');
+            
+            let shuffleCount = 0;
+            const maxShuffles = 5;
+
+            const shuffleInterval = setInterval(() => {
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('shuffling');
+                        setTimeout(() => card.classList.remove('shuffling'), 500);
+                    }, index * 50);
+                });
+
+                shuffleCount++;
+
+                if (shuffleCount >= maxShuffles) {
+                    clearInterval(shuffleInterval);
+                    setTimeout(() => {
+                        shuffleStatus.classList.add('hidden');
+                        instruction.textContent = '✨ Klik kartu untuk mengungkap hadiah Anda ✨';
+                        enableCards();
+                    }, 800);
+                }
+            }, 800);
+        }
+
+        function enableCards() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    if (this.classList.contains('flipped')) return;
+                    
+                    this.classList.add('flipped');
+                    selectedPrize = JSON.parse(this.dataset.prize);
+
+                    cards.forEach(c => {
+                        if (c !== this) {
+                            c.style.pointerEvents = 'none';
+                            c.style.opacity = '0.4';
+                        }
+                    });
+
+                    createConfetti();
+
+                    const claimBtn = this.querySelector('.claim-prize-button');
+                    claimBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        document.getElementById('modalUsername').textContent = username;
+                        document.getElementById('modalPrizeName').textContent = selectedPrize.name;
+                        document.getElementById('modalPrizeDesc').textContent = selectedPrize.desc;
+                        document.getElementById('successModal').style.display = 'flex';
+
+                        for (let i = 0; i < 100; i++) {
+                            setTimeout(() => createConfetti(), i * 20);
+                        }
+                    });
+                });
+            });
+        }
+
+        function createConfetti() {
+            const colors = ['#ffd700', '#ffed4e', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f38181'];
+            
+            for (let i = 0; i < 10; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '0';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `translateX(${(Math.random() - 0.5) * 100}px)`;
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.classList.add('active'), 10);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        document.getElementById('backButton').addEventListener('click', function() {
+            document.getElementById('successModal').style.display = 'none';
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('usernameScreen').classList.remove('hidden');
+            document.getElementById('usernameInput').value = '';
+            
+            username = '';
+            selectedPrize = null;
+            
+            document.getElementById('shuffleStatus').classList.remove('hidden');
+            document.querySelector('.instruction').textContent = '✨ Kartu sedang diacak... ✨';
+        });
+
+        document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('startButton').click();
+            }
+        });
+
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                document.getElementById('backButton').click();
             }
         });
     </script>
