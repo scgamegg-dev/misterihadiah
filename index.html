@@ -3,21 +3,24 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Doorprize Galaxy 3D - Premium</title>
+<title>Doorprize Mahjong Ways • Galaxy 3D Premium</title>
 
 <style>
   :root{
     --bg1:#040611;
     --bg2:#070a1a;
-    --card: rgba(255,255,255,.06);
-    --card2: rgba(255,255,255,.04);
-    --stroke: rgba(255,255,255,.14);
-    --stroke2: rgba(255,255,255,.09);
-    --text:#eaf0ff;
-    --muted: rgba(234,240,255,.72);
+
+    /* Mahjong theme */
+    --jade:#28d7a1;
+    --jade2:#10b981;
     --gold:#ffd700;
     --gold2:#ffed4e;
-    --good:#3cff8f;
+
+    --card: rgba(255,255,255,.06);
+    --stroke: rgba(255,255,255,.14);
+
+    --text:#eaf0ff;
+    --muted: rgba(234,240,255,.72);
     --shadow: 0 26px 110px rgba(0,0,0,.70);
   }
 
@@ -34,7 +37,7 @@
     overflow:hidden;
   }
 
-  /* ========= Galaxy (Canvas) ========= */
+  /* ===== Galaxy ===== */
   canvas#stars{
     position:fixed; inset:0;
     width:100%; height:100%;
@@ -58,7 +61,7 @@
     to  { transform: translate3d(0,-10px,0) scale(1.02); }
   }
 
-  /* ========= Layout ========= */
+  /* ===== Layout ===== */
   .wrap{
     position:relative;
     z-index:2;
@@ -85,38 +88,155 @@
     position:absolute; inset:-2px;
     background:
       radial-gradient(520px 280px at 18% 22%, rgba(255,215,0,.14), transparent 62%),
-      radial-gradient(520px 280px at 82% 34%, rgba(120,90,255,.18), transparent 62%),
+      radial-gradient(520px 280px at 82% 34%, rgba(16,185,129,.16), transparent 62%),
       radial-gradient(420px 320px at 50% 100%, rgba(0,255,200,.10), transparent 70%);
     filter: blur(12px);
     opacity:.85;
     pointer-events:none;
   }
 
-  .topbar{
+  /* ===== NEW: Banner ===== */
+  .banner{
     position:relative;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    padding:16px 18px;
+    z-index:3;
+    padding: 14px 18px 12px;
     border-bottom: 1px solid rgba(255,255,255,.08);
     background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.00));
-    z-index:2;
+    overflow:hidden;
   }
 
-  .brand{ display:flex; align-items:center; gap:12px; }
-  .logo{
+  .banner::before{
+    content:"";
+    position:absolute; inset:-40%;
+    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.10), transparent 65%);
+    transform: translateX(-35%) rotate(8deg);
+    animation: sheen 4.2s ease-in-out infinite;
+    pointer-events:none;
+    opacity:.85;
+  }
+
+  @keyframes sheen{
+    0%   { transform: translateX(-45%) rotate(8deg); opacity:.25; }
+    50%  { transform: translateX( 10%) rotate(8deg); opacity:.65; }
+    100% { transform: translateX( 55%) rotate(8deg); opacity:.25; }
+  }
+
+  .bannerRow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .bannerLeft{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width: 240px;
+  }
+  .bannerLogo{
     width:46px;height:46px;
     border-radius:18px;
     display:grid;place-items:center;
     background: rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.12);
     box-shadow: 0 14px 34px rgba(0,0,0,.35);
-    font-size:20px;
+    font-size:22px;
+  }
+  .bannerTitle{
+    font-weight: 1000;
+    letter-spacing:.8px;
+    line-height:1.1;
+    background: linear-gradient(90deg, rgba(16,185,129,.95), var(--gold), #fff, var(--gold2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    font-size: 16px;
+  }
+  .bannerSub{
+    font-size:12px;
+    color: var(--muted);
+    margin-top:2px;
   }
 
-  .title{ font-weight: 1000; letter-spacing:.7px; }
-  .sub{ font-size:12px; color: var(--muted); margin-top:2px; }
+  .maxwin{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    border-radius:18px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 16px 54px rgba(0,0,0,.35);
+    position:relative;
+    overflow:hidden;
+  }
+  .maxwin::after{
+    content:"";
+    position:absolute; inset:-40%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,215,0,.18), transparent 55%);
+    pointer-events:none;
+  }
+  .maxwinIcon{
+    width:34px;height:34px;
+    border-radius:14px;
+    display:grid;place-items:center;
+    background: linear-gradient(135deg, rgba(16,185,129,.95), rgba(255,215,0,.92));
+    color:#001b12;
+    font-weight:1000;
+    box-shadow: 0 0 22px rgba(255,215,0,.18);
+  }
+  .maxwinText{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    line-height:1.05;
+  }
+  .maxwinText .label{
+    font-size:11px;
+    color: rgba(255,255,255,.70);
+    letter-spacing:.8px;
+  }
+  .maxwinText .value{
+    font-size:14px;
+    font-weight:1000;
+    color: rgba(255,215,0,.96);
+    text-shadow: 0 0 18px rgba(255,215,0,.22);
+  }
+
+  .ticker{
+    margin-top:10px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.18);
+    overflow:hidden;
+  }
+  .tickerTrack{
+    white-space:nowrap;
+    display:inline-block;
+    padding:10px 14px;
+    animation: marquee 16s linear infinite;
+    color: rgba(255,255,255,.78);
+    font-size:12px;
+  }
+  @keyframes marquee{
+    0%{ transform: translateX(100%); }
+    100%{ transform: translateX(-100%); }
+  }
+
+  /* ===== Topbar ===== */
+  .topbar{
+    position:relative;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    z-index:2;
+  }
 
   .controls{ display:flex; gap:10px; align-items:center; }
   .chip{
@@ -131,8 +251,8 @@
   }
   .dot{
     width:8px;height:8px;border-radius:999px;
-    background: var(--good);
-    box-shadow: 0 0 18px rgba(60,255,143,.55);
+    background: var(--jade2);
+    box-shadow: 0 0 18px rgba(16,185,129,.55);
     animation: pulse 1.3s ease-in-out infinite;
   }
   @keyframes pulse{
@@ -155,25 +275,24 @@
   .btn:hover{ filter: brightness(1.08); }
   .btn:active{ transform: translateY(1px); }
   .btn.primary{
-    background: linear-gradient(135deg, rgba(255,215,0,.95), rgba(255,237,78,.90));
-    color:#000;
+    background: linear-gradient(135deg, rgba(16,185,129,.95), rgba(255,215,0,.92));
+    color:#001b12;
   }
 
   .content{
     position:relative;
     z-index:2;
-    padding:18px;
+    padding:16px 18px 18px;
   }
-
   .screen{ display:none; }
   .screen.active{ display:block; }
 
-  /* ========= User Screen ========= */
+  /* ===== User Screen ===== */
   .center{
     min-height: 420px;
     display:grid;
     place-items:center;
-    padding: 18px;
+    padding: 10px 0 4px;
   }
   .cardBox{
     width:min(560px, 96vw);
@@ -194,15 +313,11 @@
     animation: sheen 4.2s ease-in-out infinite;
     pointer-events:none;
   }
-  @keyframes sheen{
-    0%   { transform: translateX(-45%) rotate(8deg); opacity:.25; }
-    50%  { transform: translateX( 10%) rotate(8deg); opacity:.60; }
-    100% { transform: translateX( 55%) rotate(8deg); opacity:.25; }
-  }
+
   .bigLogo{
     font-size:64px;
     text-align:center;
-    filter: drop-shadow(0 0 30px rgba(255,215,0,.55));
+    filter: drop-shadow(0 0 30px rgba(16,185,129,.45));
     animation: bounce 2s ease-in-out infinite;
     position:relative; z-index:1;
   }
@@ -216,7 +331,7 @@
     font-size: clamp(22px, 3.6vw, 36px);
     font-weight: 1000;
     letter-spacing:1px;
-    background: linear-gradient(90deg, var(--gold), #fff, var(--gold2));
+    background: linear-gradient(90deg, rgba(16,185,129,.95), var(--gold), #fff, var(--gold2));
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
@@ -243,15 +358,15 @@
     position:relative; z-index:1;
   }
   .input:focus{
-    border-color: rgba(255,215,0,.45);
-    box-shadow: 0 0 0 4px rgba(255,215,0,.12);
+    border-color: rgba(16,185,129,.50);
+    box-shadow: 0 0 0 4px rgba(16,185,129,.14);
   }
   .input::placeholder{ color: rgba(255,255,255,.45); }
 
-  /* ========= Game ========= */
+  /* ===== Game Head + Progress ===== */
   .gameHead{
     text-align:center;
-    padding:10px 6px 2px;
+    padding:6px 6px 2px;
   }
   .welcome{
     font-weight: 950;
@@ -263,7 +378,26 @@
   .instr{
     color: var(--muted);
     font-size: 13px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  .barWrap{
+    width:min(520px, 92vw);
+    margin: 0 auto 6px;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    overflow:hidden;
+    position:relative;
+  }
+  .bar{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background: linear-gradient(90deg, rgba(16,185,129,.95), rgba(255,215,0,.95));
+    box-shadow: 0 0 24px rgba(16,185,129,.25);
+    transition: width .25s ease;
   }
   .status{
     display:inline-flex;
@@ -279,7 +413,7 @@
   }
   .status.hidden{ display:none; }
 
-  /* Mobile 2x4 fixed */
+  /* ===== Grid 2x4 on mobile ===== */
   .grid{
     display:grid;
     grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -290,7 +424,7 @@
     .grid{ grid-template-columns: repeat(2, minmax(150px, 1fr)); }
   }
 
-  /* ========= Cards: NO LAYOUT SHIFT ========= */
+  /* ===== Cards: no shift ===== */
   .card{
     height: 240px;
     perspective: 1100px;
@@ -314,22 +448,13 @@
     will-change: transform;
   }
 
-  /* Hover: only glow (no translate) */
+  /* Hover only glow, no translate */
   .card:not(.locked) .cardInner:hover{
-    box-shadow: 0 18px 70px rgba(0,0,0,.55), 0 0 40px rgba(255,215,0,.18);
+    box-shadow: 0 18px 70px rgba(0,0,0,.55),
+                0 0 44px rgba(16,185,129,.16),
+                0 0 34px rgba(255,215,0,.14);
     filter: brightness(1.06);
   }
-
-  .cardInner::after{
-    content:"";
-    position:absolute; inset:-40%;
-    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.10), transparent 65%);
-    transform: translateX(-35%) rotate(8deg);
-    opacity:.0;
-    transition: opacity .25s ease;
-    pointer-events:none;
-  }
-  .card:not(.locked) .cardInner:hover::after{ opacity:.55; }
 
   .face{
     position:absolute; inset:0;
@@ -342,28 +467,32 @@
     padding: 14px;
     text-align:center;
   }
+
   .front{
     background:
-      radial-gradient(240px 160px at 25% 25%, rgba(255,215,0,.16), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
-  }
-  .back{
-    transform: rotateY(180deg);
-    background:
-      radial-gradient(240px 160px at 30% 25%, rgba(60,255,143,.12), transparent 60%),
+      radial-gradient(240px 160px at 25% 25%, rgba(16,185,129,.18), transparent 60%),
+      radial-gradient(240px 160px at 75% 75%, rgba(255,215,0,.12), transparent 60%),
       linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
   }
 
-  .icon{
+  .back{
+    transform: rotateY(180deg);
+    background:
+      radial-gradient(240px 160px at 30% 25%, rgba(255,215,0,.14), transparent 60%),
+      radial-gradient(240px 160px at 70% 70%, rgba(16,185,129,.14), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
+  }
+
+  .tileIcon{
     font-size: 46px;
-    filter: drop-shadow(0 0 18px rgba(255,215,0,.35));
+    filter: drop-shadow(0 0 18px rgba(16,185,129,.22));
     margin-bottom: 10px;
   }
   .num{
     font-weight: 1000;
     letter-spacing:1px;
-    font-size: 22px;
-    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    font-size: 20px;
+    background: linear-gradient(90deg, rgba(16,185,129,.95), var(--gold2));
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
@@ -375,14 +504,14 @@
   }
 
   .pIcon{
-    font-size: 44px;
+    font-size: 42px;
     margin-bottom: 8px;
-    filter: drop-shadow(0 0 18px rgba(255,215,0,.35));
+    filter: drop-shadow(0 0 18px rgba(255,215,0,.28));
   }
   .pName{
     font-weight: 1000;
     color: rgba(255,215,0,.96);
-    text-shadow: 0 0 16px rgba(255,215,0,.22);
+    text-shadow: 0 0 16px rgba(255,215,0,.18);
     margin-bottom: 6px;
   }
   .pDesc{
@@ -411,27 +540,24 @@
     cursor:pointer;
   }
   .cta.primary{
-    background: linear-gradient(135deg, rgba(255,215,0,.95), rgba(255,237,78,.90));
-    color:#000;
+    background: linear-gradient(135deg, rgba(16,185,129,.95), rgba(255,215,0,.92));
+    color:#001b12;
   }
   .cta:active{ transform: translateY(1px); }
 
-  /* Flip */
   .card.revealed .cardInner{ transform: rotateY(180deg); }
 
-  /* After pick: lock + dim */
   .card.locked{ pointer-events:none; }
-  .card.locked .cardInner{ filter: saturate(.9) brightness(.95); }
   .card.dim .cardInner{ opacity: .45; }
 
-  /* Zoom selected without reflow */
   .card.selected{ z-index:6; }
   .card.selected .cardInner{
     transform: rotateY(180deg) scale(1.06);
-    box-shadow: 0 28px 140px rgba(0,0,0,.80), 0 0 80px rgba(255,215,0,.16);
+    box-shadow: 0 28px 140px rgba(0,0,0,.80),
+                0 0 90px rgba(16,185,129,.12),
+                0 0 70px rgba(255,215,0,.10);
   }
 
-  /* Shuffle (real feel, no shift): jitter + blur + swap content */
   .cardInner.shuffling{
     animation: jitter .42s ease-in-out;
     filter: blur(.2px) brightness(1.02);
@@ -443,7 +569,7 @@
     100%{ transform: rotateY(0deg) rotateZ(0deg) scale(1); }
   }
 
-  /* ========= Modal ========= */
+  /* ===== Modal ===== */
   .modal{
     position:fixed; inset:0;
     background: rgba(0,0,0,.72);
@@ -464,14 +590,6 @@
     position:relative;
     overflow:hidden;
   }
-  .modalBox::after{
-    content:"";
-    position:absolute; inset:-40%;
-    background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.10), transparent 65%);
-    transform: translateX(-35%) rotate(8deg);
-    animation: sheen 4.2s ease-in-out infinite;
-    pointer-events:none;
-  }
   .modalInner{
     position:relative;
     border-radius: 18px;
@@ -485,7 +603,7 @@
     font-weight: 1000;
     letter-spacing: .6px;
     margin: 6px 0 10px;
-    background: linear-gradient(90deg, var(--gold), #fff, var(--gold2));
+    background: linear-gradient(90deg, rgba(16,185,129,.95), var(--gold), #fff, var(--gold2));
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
@@ -504,7 +622,7 @@
     margin-top: 12px;
   }
 
-  /* ========= Confetti ========= */
+  /* Confetti */
   .confetti{
     position:fixed;
     width:10px;height:10px;
@@ -527,15 +645,35 @@
 
   <div class="wrap">
     <div class="panel">
-      <div class="topbar">
-        <div class="brand">
-          <div class="logo">🌌</div>
-          <div>
-            <div class="title">DOORPRIZE GALAXY • PREMIUM</div>
-            <div class="sub">Glassmorphism • Shuffle Real • Anti Double Click • Replay</div>
+
+      <!-- NEW BANNER -->
+      <div class="banner">
+        <div class="bannerRow">
+          <div class="bannerLeft">
+            <div class="bannerLogo">🀄</div>
+            <div>
+              <div class="bannerTitle" id="bannerTitle">MAHJONG WAYS • LUCKY BONUS</div>
+              <div class="bannerSub">Spin keberuntungan • Pilih kartu • Raih hadiah</div>
+            </div>
+          </div>
+
+          <div class="maxwin" title="MAXWIN">
+            <div class="maxwinIcon">JP</div>
+            <div class="maxwinText">
+              <div class="label">SENSATIONAL MAXWIN</div>
+              <div class="value" id="maxwinValue">MAXWIN Rp 30.000.000</div>
+            </div>
           </div>
         </div>
 
+        <div class="ticker">
+          <div class="tickerTrack" id="tickerText">
+            🌌 Mahjong Ways sedang panas! • 💰 Banyak pemain klaim bonus • 🀄 Pilih 1 kartu untuk hadiah • 🚀 Good Luck!
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar">
         <div class="controls">
           <button class="btn" id="soundBtn" title="Sound ON/OFF">🔊</button>
           <button class="btn" id="backToUserBtn" title="Kembali ke input username">↩ Kembali</button>
@@ -550,15 +688,15 @@
         <div class="screen active" id="screenUser">
           <div class="center">
             <div class="cardBox">
-              <div class="bigLogo">🎁</div>
+              <div class="bigLogo">🀄</div>
               <div class="headline">DOORPRIZE AJAIB4D</div>
-              <div class="desc">Masukkan username untuk mulai bermain.</div>
+              <div class="desc">Masukkan username untuk mulai bermain (tema Mahjong Ways).</div>
 
               <input class="input" id="usernameInput" maxlength="20" placeholder="Contoh: user_123 / Niziu" />
               <button class="btn primary" id="startBtn" style="width:100%;height:44px;margin-top:12px;">✨ MULAI ✨</button>
 
               <div class="desc" style="margin-top:10px;font-size:12px;">
-                Tip: Setelah shuffle selesai, klik 1 kartu. Sistem anti double click aktif.
+                Sistem anti double click aktif • Replay tanpa reload.
               </div>
             </div>
           </div>
@@ -569,6 +707,11 @@
           <div class="gameHead">
             <div class="welcome">Selamat datang, <span id="nameOut"></span>!</div>
             <div class="instr" id="instr">✨ Kartu sedang diacak... ✨</div>
+
+            <div class="barWrap" aria-label="Shuffle progress">
+              <div class="bar" id="bar"></div>
+            </div>
+
             <div class="status" id="shuffleStatus">🔄 Mengacak kartu...</div>
           </div>
           <div class="grid" id="grid"></div>
@@ -581,7 +724,7 @@
   <div class="modal" id="modal">
     <div class="modalBox">
       <div class="modalInner">
-        <div style="font-size:56px; filter: drop-shadow(0 0 18px rgba(255,215,0,.35));">🎉</div>
+        <div style="font-size:56px; filter: drop-shadow(0 0 18px rgba(16,185,129,.25));">🎉</div>
         <div class="modalH">SELAMAT!</div>
         <div class="modalP">
           Username: <b id="mUser">-</b><br>
@@ -600,7 +743,15 @@
 
 <script>
 /* ======================
-   DATA (edit hadiah di sini)
+   EDIT DI SINI
+====================== */
+const MAXWIN_TEXT = "MAXWIN Rp 30.000.000";     // <-- ubah nominal di sini
+const CLAIM_URL = "";                           // <-- isi link claim kamu (contoh: "https://example.com")
+
+document.getElementById("maxwinValue").textContent = MAXWIN_TEXT;
+
+/* ======================
+   DATA HADIAH
 ====================== */
 const PRIZES = [
   { icon:"💵", name:"Uang Tunai Rp 100.000", desc:"Uang tunai senilai Rp 100.000" },
@@ -633,6 +784,7 @@ const nameOut = document.getElementById("nameOut");
 const grid = document.getElementById("grid");
 const shuffleStatus = document.getElementById("shuffleStatus");
 const instr = document.getElementById("instr");
+const bar = document.getElementById("bar");
 const modal = document.getElementById("modal");
 const mUser = document.getElementById("mUser");
 const mPrize = document.getElementById("mPrize");
@@ -696,8 +848,6 @@ soundBtn.addEventListener("click", () => {
 
 /* ======================
    BUILD CARDS
-   - Grid tidak geser
-   - Shuffle akan "mengacak isi" kartu
 ====================== */
 function renderCards(){
   grid.innerHTML = "";
@@ -711,7 +861,7 @@ function renderCards(){
     card.innerHTML = `
       <div class="cardInner">
         <div class="face front">
-          <div class="icon">🎴</div>
+          <div class="tileIcon">🀄</div>
           <div class="num">KARTU ${idx+1}</div>
           <div class="small">Klik untuk membuka</div>
         </div>
@@ -732,26 +882,29 @@ function renderCards(){
 }
 
 /* ======================
-   SHUFFLE "REAL FEEL" tanpa geser:
-   - Animasi jitter pada inner
-   - Secara cepat swap dataset+isi back beberapa kali
+   SHUFFLE PROGRESS (no shift)
 ====================== */
 function runShuffle(){
   shuffleDone = false;
+  picked = false;
+  selectedPrize = null;
+
+  bar.style.width = "0%";
   instr.textContent = "✨ Kartu sedang diacak... ✨";
   shuffleStatus.classList.remove("hidden");
 
   const cards = Array.from(document.querySelectorAll(".card"));
-  cards.forEach(c => c.classList.add("locked")); // disable click during shuffle
+  cards.forEach(c => c.classList.add("locked"));
 
-  const swirlIcons = ["🎴","🃏","⭐","✨","💫","🌙","🪐","🌌"];
+  const swirlIcons = ["🀄","🀙","🀚","🀛","🀇","🀈","🀉","✨","💫","🪐","🌌"];
   let rounds = 0;
-  const maxRounds = 8;
+  const maxRounds = 10;
 
   const interval = setInterval(() => {
     rounds++;
+    const pct = Math.min(100, Math.round((rounds / maxRounds) * 100));
+    bar.style.width = pct + "%";
 
-    // jitter animation
     cards.forEach((c, i) => {
       const inner = c.querySelector(".cardInner");
       setTimeout(() => {
@@ -760,13 +913,11 @@ function runShuffle(){
       }, i*35);
     });
 
-    // swap displayed front icon (visual shuffle)
     cards.forEach((c) => {
-      const iconEl = c.querySelector(".front .icon");
+      const iconEl = c.querySelector(".front .tileIcon");
       iconEl.textContent = swirlIcons[Math.floor(Math.random()*swirlIcons.length)];
     });
 
-    // swap the prize assignment (real shuffle effect)
     const newPack = shuffleArray(PRIZES);
     cards.forEach((c, idx) => {
       const p = newPack[idx];
@@ -781,22 +932,21 @@ function runShuffle(){
       setTimeout(() => {
         shuffleStatus.classList.add("hidden");
         instr.textContent = "✨ Klik 1 kartu untuk mengungkap hadiah ✨";
-        cards.forEach(c => c.classList.remove("locked"));
+        cards.forEach(c => c.classList.remove("locked", "dim", "selected", "revealed"));
         shuffleDone = true;
         enablePick();
       }, 650);
     }
-  }, 520);
+  }, 420);
 }
 
 /* ======================
-   PICK + Anti double click + Zoom winner + Lock others
+   PICK + Anti Double Click
 ====================== */
 function enablePick(){
   const cards = Array.from(document.querySelectorAll(".card"));
 
   cards.forEach(card => {
-    // clear old handler
     card.onclick = null;
 
     card.addEventListener("click", () => {
@@ -808,16 +958,13 @@ function enablePick(){
 
       selectedPrize = JSON.parse(card.dataset.prize);
 
-      // reveal + zoom
       card.classList.add("revealed", "selected");
 
-      // lock others
       cards.forEach(c => {
         c.classList.add("locked");
         if(c !== card) c.classList.add("dim");
       });
 
-      // attach buttons on selected card
       const claimInCard = card.querySelector(".cta.primary");
       const detailInCard = card.querySelector(".cta:not(.primary)");
 
@@ -834,11 +981,9 @@ function enablePick(){
         }, { once:true });
       }
 
-      // win effects
       beep("win");
       for(let i=0;i<70;i++) setTimeout(createConfetti, i*16);
 
-      // auto open modal after short delay (smooth)
       setTimeout(openModal, 650);
 
     }, { once:true });
@@ -861,23 +1006,21 @@ modal.addEventListener("click", (e) => {
 });
 closeBtn.addEventListener("click", () => { beep("click"); closeModal(); });
 
-/* Claim button (AMAN default).
-   GANTI link ini ke halaman resmi kamu kalau memang legit. */
 claimBtn.addEventListener("click", () => {
   beep("click");
-  // contoh aman:
-  // window.open("https://example.com/claim", "_blank");
-  alert("Ganti link CLAIM ke halaman resmi kamu (WA/website resmi) agar aman.");
+  if(CLAIM_URL && CLAIM_URL.startsWith("http")){
+    window.open(CLAIM_URL, "_blank");
+  }else{
+    alert("Masukkan link CLAIM_URL di script (contoh: https://domainkamu.com/claim).");
+  }
 });
 
-/* Replay without reload */
 replayBtn.addEventListener("click", () => {
   beep("click");
   closeModal();
   resetRound();
 });
 
-/* Back to username */
 backToUserBtn.addEventListener("click", () => {
   beep("click");
   closeModal();
@@ -888,10 +1031,6 @@ backToUserBtn.addEventListener("click", () => {
    RESET
 ====================== */
 function resetRound(){
-  picked = false;
-  selectedPrize = null;
-  shuffleDone = false;
-
   renderCards();
   runShuffle();
 }
@@ -938,7 +1077,7 @@ usernameInput.addEventListener("keypress", (e) => {
    CONFETTI
 ====================== */
 function createConfetti(){
-  const colors = ["#ffd700","#ffed4e","#ff6b6b","#4ecdc4","#45b7d1","#f38181"];
+  const colors = ["#ffd700","#ffed4e","#10b981","#34d399","#4ecdc4","#45b7d1"];
   const conf = document.createElement("div");
   conf.className = "confetti";
   conf.style.left = (Math.random()*100) + "%";
@@ -1018,16 +1157,14 @@ function draw(){
     if(s.x > W+10) s.x = -10;
     if(s.y > H+10) s.y = -10;
   }
-
   requestAnimationFrame(draw);
 }
 window.addEventListener("mousemove",(e)=>{ mouse.x=e.clientX; mouse.y=e.clientY; mouse.active=true; });
 window.addEventListener("mouseleave",()=> mouse.active=false);
 
-/* smooth parallax for background gradients */
 document.addEventListener("mousemove", (e) => {
-  const x = (e.clientX / window.innerWidth - 0.5) * 18;
-  const y = (e.clientY / window.innerHeight - 0.5) * 18;
+  const x = (e.clientX / window.innerWidth - 0.5) * 14;
+  const y = (e.clientY / window.innerHeight - 0.5) * 14;
   document.body.style.backgroundPosition = `${50 + x}% ${50 + y}%`;
 });
 
