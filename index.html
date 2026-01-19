@@ -633,6 +633,61 @@
                 font-size: 1.3em;
             }
         }
+        /* ===============================
+   FIX: Kartu tidak berubah posisi
+================================ */
+
+/* Hilangkan hover & transform saat flipped */
+.card.flipped,
+.card.flipped:hover {
+    transform: none !important;
+}
+
+/* Pastikan animasi shuffle tidak menggeser layout */
+.card {
+    will-change: transform;
+    transform-origin: center center;
+}
+
+/* Nonaktifkan hover effect setelah kartu dibuka */
+.card.flipped {
+    cursor: default;
+}
+
+/* ===============================
+   GALAXY 3D BACKGROUND
+================================ */
+
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Lapisan nebula */
+body::before {
+    background:
+        radial-gradient(600px 400px at 20% 30%, rgba(138,43,226,.25), transparent 60%),
+        radial-gradient(500px 500px at 80% 40%, rgba(30,144,255,.20), transparent 60%),
+        radial-gradient(600px 600px at 50% 80%, rgba(255,20,147,.18), transparent 65%);
+    animation: galaxyFloat 20s ease-in-out infinite alternate;
+}
+
+/* Lapisan glow space */
+body::after {
+    background:
+        radial-gradient(400px 300px at 50% 20%, rgba(255,255,255,.08), transparent 70%);
+    mix-blend-mode: screen;
+}
+
+@keyframes galaxyFloat {
+    from { transform: translate3d(0,0,0) scale(1); }
+    to   { transform: translate3d(-40px, -20px, 0) scale(1.05); }
+}
+
     </style>
 </head>
 <body>
@@ -786,39 +841,50 @@
         }
 
         function enableCards() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('click', function() {
-                    if (this.classList.contains('flipped')) return;
-                    
-                    this.classList.add('flipped');
-                    selectedPrize = JSON.parse(this.dataset.prize);
+    const cards = document.querySelectorAll('.card');
 
-                    cards.forEach(c => {
-                        if (c !== this) {
-                            c.style.pointerEvents = 'none';
-                            c.style.opacity = '0.4';
-                        }
-                    });
+    cards.forEach(card => {
+        card.style.pointerEvents = 'auto';
 
-                    createConfetti();
+        card.addEventListener('click', function () {
+            if (selectedPrize) return; // hanya 1 kartu
 
-                    const claimBtn = this.querySelector('.claim-prize-button');
-                    claimBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        
-                        document.getElementById('modalUsername').textContent = username;
-                        document.getElementById('modalPrizeName').textContent = selectedPrize.name;
-                        document.getElementById('modalPrizeDesc').textContent = selectedPrize.desc;
-                        document.getElementById('successModal').style.display = 'flex';
+            // KUNCI posisi kartu
+            this.style.transform = 'none';
 
-                        for (let i = 0; i < 100; i++) {
-                            setTimeout(() => createConfetti(), i * 20);
-                        }
-                    });
-                });
+            this.classList.add('flipped');
+            selectedPrize = JSON.parse(this.dataset.prize);
+
+            // Nonaktifkan kartu lain TANPA geser posisi
+            cards.forEach(c => {
+                if (c !== this) {
+                    c.style.pointerEvents = 'none';
+                    c.style.opacity = '0.4';
+                    c.style.transform = 'none';
+                }
             });
-        }
+
+            createConfetti();
+
+            const claimBtn = this.querySelector('.claim-prize-button');
+            if (claimBtn) {
+                claimBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+
+                    document.getElementById('modalUsername').textContent = username;
+                    document.getElementById('modalPrizeName').textContent = selectedPrize.name;
+                    document.getElementById('modalPrizeDesc').textContent = selectedPrize.desc;
+                    document.getElementById('successModal').style.display = 'flex';
+
+                    for (let i = 0; i < 80; i++) {
+                        setTimeout(createConfetti, i * 25);
+                    }
+                }, { once: true });
+            }
+        }, { once: true });
+    });
+}
+
 
         function createConfetti() {
             const colors = ['#ffd700', '#ffed4e', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f38181'];
@@ -836,7 +902,14 @@
                 setTimeout(() => confetti.remove(), 3000);
             }
         }
+            document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 30;
+    const y = (e.clientY / window.innerHeight - 0.5) * 30;
 
+    document.body.style.backgroundPosition =
+        `${50 + x}% ${50 + y}%`;
+});
+  
         document.getElementById('backButton').addEventListener('click', function() {
             document.getElementById('successModal').style.display = 'none';
             document.getElementById('gameScreen').classList.remove('active');
@@ -864,3 +937,4 @@
     </script>
 </body>
 </html>
+
