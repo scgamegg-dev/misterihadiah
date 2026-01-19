@@ -767,11 +767,36 @@ const PRIZES = [
 /* ======================
    STATE
 ====================== */
-let username = "";
-let selectedPrize = null;
-let picked = false;
-let soundOn = true;
-let shuffleDone = false;
+/* ======================
+   USERNAME ANTI DUPLIKAT (LOCALSTORAGE)
+====================== */
+const USED_USERS_KEY = "USED_USERNAMES_AJAIB4D_V1";
+
+function loadUsedUsers(){
+  try{
+    return JSON.parse(localStorage.getItem(USED_USERS_KEY) || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function saveUsedUsers(list){
+  localStorage.setItem(USED_USERS_KEY, JSON.stringify(list));
+}
+
+function isUserUsed(name){
+  const used = loadUsedUsers();
+  return used.includes(name.toLowerCase());
+}
+
+function markUserUsed(name){
+  const used = loadUsedUsers();
+  const key = name.toLowerCase();
+  if(!used.includes(key)){
+    used.push(key);
+    saveUsedUsers(used);
+  }
+}
 
 /* ======================
    REFS
@@ -811,40 +836,111 @@ function shuffleArray(arr){
    SOUND
 ====================== */
 function beep(type="click"){
-  if(!soundOn) return;
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
+ /* ======================
+   BACKGROUND MUSIC (ORIGINAL MAHJONG-STYLE)
+   - Play setelah user klik (aturan browser)
+====================== */
+let musicCtx = null;
+let musicTimer = null;
+let musicPlaying = false;
 
-  if(type === "click"){
-    osc.frequency.setValueAtTime(520, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.08);
-    gain.gain.setValueAtTime(0.22, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.10);
-    osc.start(); osc.stop(ctx.currentTime + 0.10);
-  }else if(type === "win"){
-    const notes = [523.25, 659.25, 783.99, 1046.50];
-    notes.forEach((f, i) => {
-      setTimeout(() => {
-        const o2 = ctx.createOscillator();
-        const g2 = ctx.createGain();
-        o2.connect(g2);
-        g2.connect(ctx.destination);
-        o2.frequency.value = f;
-        g2.gain.setValueAtTime(0.18, ctx.currentTime);
-        g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-        o2.start(); o2.stop(ctx.currentTime + 0.25);
-      }, i * 120);
-    });
+function startMusic(){
+  if(!soundOn) return;             // kalau user mute, ikut mute
+  if(musicPlaying) return;
+
+  musicCtx = musicCtx || new (window.AudioContext || window.webkitAudioContext)();
+  const ctx = musicCtx;
+
+  // scale pentatonic (A minor pentatonic-ish)
+  const scale = [0, 3, 5, 7, 10]; // semitone steps
+  const base = 220; // A3-ish (feel oriental when pentatonic)
+
+  function noteFreq(step){
+    return base * Math.pow(2, step / 12);
   }
+
+  // soft pad
+  const pad = ctx.createOscillator();
+  const padGain = ctx.createGain();
+  pad.type = "sine";
+  pad.frequency.value = 110;
+  padGain.gain.value = 0.03;
+  pad.connect(padGain);
+  padGain.connect(ctx.destination);
+  pad.start();
+
+  // melody synth
+  function playPluck(freq, t, dur=0.18){
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  }
+
+  // tiny percussion "klik"
+  function playTick(t){
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "square";
+    o.frequency.setValueAtTime(900, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.05, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.start(t);
+    o.stop(t + 0.06);
+  }
+
+  let step = 0;
+  const bpm = 92;
+  const intervalMs = (60_000 / bpm) / 2; // 8th note
+
+  musicTimer = setInterval(() => {
+    const now = ctx.currentTime;
+
+    // melody random tapi tetap enak
+    const pick = scale[Math.floor(Math.random()*scale.length)];
+    const octave = Math.random() < 0.25 ? 12 : 0;
+    playPluck(noteFreq(pick + octave), now);
+
+    if(step % 2 === 0) playTick(now);
+
+    step++;
+  }, intervalMs);
+
+  // simpan node supaya bisa stop
+  startMusic._pad = pad;
+  startMusic._padGain = padGain;
+
+  musicPlaying = true;
 }
-soundBtn.addEventListener("click", () => {
-  soundOn = !soundOn;
-  soundBtn.textContent = soundOn ? "🔊" : "🔇";
-  beep("click");
-});
+
+function stopMusic(){
+  if(!musicPlaying) return;
+  if(musicTimer) clearInterval(musicTimer);
+  musicTimer = null;
+
+  try{
+    startMusic._pad?.stop();
+  }catch(e){}
+  startMusic._pad = null;
+  startMusic._padGain = null;
+
+  musicPlaying = false;
+}
+
+function toggleMusic(){
+  if(musicPlaying) stopMusic();
+  else startMusic();
+}
 
 /* ======================
    BUILD CARDS
@@ -894,51 +990,82 @@ function runShuffle(){
   shuffleStatus.classList.remove("hidden");
 
   const cards = Array.from(document.querySelectorAll(".card"));
-  cards.forEach(c => c.classList.add("locked"));
+  cards.forEach(c => {
+    c.classList.add("locked");
+    c.classList.remove("dim", "selected", "revealed");
+  });
 
   const swirlIcons = ["🀄","🀙","🀚","🀛","🀇","🀈","🀉","✨","💫","🪐","🌌"];
-  let rounds = 0;
-  const maxRounds = 10;
 
-  const interval = setInterval(() => {
-    rounds++;
-    const pct = Math.min(100, Math.round((rounds / maxRounds) * 100));
-    bar.style.width = pct + "%";
+  // fase shuffle: cepat -> lambat (lebih natural)
+  const phases = [
+    { rounds: 8,  interval: 160 }, // cepat
+    { rounds: 8,  interval: 240 }, // medium
+    { rounds: 8,  interval: 320 }, // lambat
+  ];
 
-    cards.forEach((c, i) => {
-      const inner = c.querySelector(".cardInner");
-      setTimeout(() => {
-        inner.classList.add("shuffling");
-        setTimeout(() => inner.classList.remove("shuffling"), 420);
-      }, i*35);
-    });
+  let totalRounds = phases.reduce((s,p)=>s+p.rounds,0);
+  let doneRounds = 0;
 
-    cards.forEach((c) => {
-      const iconEl = c.querySelector(".front .tileIcon");
-      iconEl.textContent = swirlIcons[Math.floor(Math.random()*swirlIcons.length)];
-    });
-
-    const newPack = shuffleArray(PRIZES);
-    cards.forEach((c, idx) => {
-      const p = newPack[idx];
-      c.dataset.prize = JSON.stringify(p);
-      c.querySelector(".back .pIcon").textContent = p.icon;
-      c.querySelector(".back .pName").textContent = p.name;
-      c.querySelector(".back .pDesc").textContent = p.desc;
-    });
-
-    if(rounds >= maxRounds){
-      clearInterval(interval);
+  function doPhase(pi){
+    if(pi >= phases.length){
+      // selesai
       setTimeout(() => {
         shuffleStatus.classList.add("hidden");
         instr.textContent = "✨ Klik 1 kartu untuk mengungkap hadiah ✨";
-        cards.forEach(c => c.classList.remove("locked", "dim", "selected", "revealed"));
+        cards.forEach(c => c.classList.remove("locked"));
         shuffleDone = true;
         enablePick();
-      }, 650);
+      }, 450);
+      return;
     }
-  }, 420);
+
+    const { rounds, interval } = phases[pi];
+    let r = 0;
+
+    const timer = setInterval(() => {
+      r++;
+      doneRounds++;
+
+      // progress bar smooth
+      const pct = Math.min(100, Math.round((doneRounds / totalRounds) * 100));
+      bar.style.width = pct + "%";
+
+      // animasi shuffle (tanpa geser posisi)
+      cards.forEach((c, i) => {
+        const inner = c.querySelector(".cardInner");
+        setTimeout(() => {
+          inner.classList.add("shuffling");
+          setTimeout(() => inner.classList.remove("shuffling"), 420);
+        }, i * 22);
+      });
+
+      // icon depan random
+      cards.forEach((c) => {
+        const iconEl = c.querySelector(".front .tileIcon");
+        iconEl.textContent = swirlIcons[Math.floor(Math.random()*swirlIcons.length)];
+      });
+
+      // swap hadiah (acak data, posisi kartu tetap)
+      const newPack = shuffleArray(PRIZES);
+      cards.forEach((c, idx) => {
+        const p = newPack[idx];
+        c.dataset.prize = JSON.stringify(p);
+        c.querySelector(".back .pIcon").textContent = p.icon;
+        c.querySelector(".back .pName").textContent = p.name;
+        c.querySelector(".back .pDesc").textContent = p.desc;
+      });
+
+      if(r >= rounds){
+        clearInterval(timer);
+        doPhase(pi + 1);
+      }
+    }, interval);
+  }
+
+  doPhase(0);
 }
+
 
 /* ======================
    PICK + Anti Double Click
@@ -1056,6 +1183,16 @@ function resetAllToUser(){
 startBtn.addEventListener("click", () => {
   const v = usernameInput.value.trim();
   if(!v) return alert("Isi username dulu ya!");
+
+  // ✅ cek duplikat
+  if(isUserUsed(v)){
+    alert("⚠️ Username ini sudah pernah digunakan. Silakan pakai username lain.");
+    return;
+  }
+
+  // ✅ lock 1x pakai (langsung setelah masuk)
+  markUserUsed(v);
+
   username = v;
 
   beep("click");
@@ -1067,10 +1204,7 @@ startBtn.addEventListener("click", () => {
   nameOut.textContent = username;
 
   resetRound();
-});
-
-usernameInput.addEventListener("keypress", (e) => {
-  if(e.key === "Enter") startBtn.click();
+  startMusic(); // ✅ mulai musik setelah user klik start
 });
 
 /* ======================
@@ -1173,3 +1307,4 @@ draw();
 </script>
 </body>
 </html>
+
