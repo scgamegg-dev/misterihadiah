@@ -48,6 +48,23 @@
             opacity: 0.3;
             color: #eab308;
         }
+         @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient-shift 8s ease infinite;
+        }
+        @keyframes shine {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .shine-effect {
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            background-size: 200% 100%;
+            animation: shine 3s infinite;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen overflow-x-hidden">
@@ -440,3 +457,4 @@
     </script>
 </body>
 </html>
+
