@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JARAH HARTA AJAIB4D</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @keyframes marquee {
             0% { transform: translateX(100%); }
@@ -45,17 +47,72 @@
         .sparkle {
             position: absolute;
             font-size: 20px;
-            opacity: 0.3;
+            opacity: 0.4;
             color: #eab308;
+            pointer-events: none;
         }
-         @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+
+        /* 3D Ocean Canvas */
+        #ocean-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
         }
-        .animate-gradient {
-            background-size: 200% 200%;
-            animation: gradient-shift 8s ease infinite;
+
+        /* Overlay gradient on top of ocean for readability */
+        .ocean-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(0,30,60,0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(0,10,30,0.6) 0%, transparent 60%),
+                linear-gradient(180deg, rgba(0,20,50,0.2) 0%, rgba(0,5,20,0.5) 100%);
+            pointer-events: none;
         }
+
+        /* Foam/bubble particles */
+        @keyframes bubble-rise {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+        .bubble {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(100,200,255,0.2));
+            border: 1px solid rgba(255,255,255,0.4);
+            pointer-events: none;
+            z-index: 2;
+            animation: bubble-rise linear infinite;
+        }
+
+        /* Rays of light underwater */
+        @keyframes ray-shift {
+            0%, 100% { opacity: 0.05; transform: skewX(-5deg) scaleX(1); }
+            50% { opacity: 0.15; transform: skewX(5deg) scaleX(1.2); }
+        }
+        .light-ray {
+            position: fixed;
+            top: 0;
+            width: 80px;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(100,210,255,0.3) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 2;
+            animation: ray-shift ease-in-out infinite;
+            transform-origin: top center;
+        }
+
+        body { overflow-x: hidden; }
+
+        /* Adjust all UI content z-index above ocean */
+        .ui-content { position: relative; z-index: 5; }
+
         @keyframes shine {
             0% { background-position: -200% center; }
             100% { background-position: 200% center; }
@@ -65,34 +122,82 @@
             background-size: 200% 100%;
             animation: shine 3s infinite;
         }
+
+        /* Foam wave at bottom */
+        @keyframes foam-wave {
+            0%, 100% { transform: scaleX(1) translateX(0); }
+            50% { transform: scaleX(1.1) translateX(-5%); }
+        }
+        .foam-layer {
+            position: fixed;
+            bottom: 0;
+            left: -10%;
+            width: 120%;
+            height: 80px;
+            background: radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: foam-wave 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* Caustic light pattern */
+        @keyframes caustic {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.04; }
+            50% { transform: rotate(180deg) scale(1.3); opacity: 0.09; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.04; }
+        }
+        .caustic-layer {
+            position: fixed;
+            inset: 0;
+            background: repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                rgba(0,180,255,0.05) 0deg 30deg,
+                rgba(0,100,200,0.02) 30deg 60deg
+            );
+            animation: caustic 20s linear infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen overflow-x-hidden relative">
-    
-    <!-- Luxury Gold Background Overlay -->
-    <div class="fixed inset-0 pointer-events-none z-0">
-        <div class="absolute inset-0 bg-gradient-to-br from-yellow-900/20 via-transparent to-yellow-600/20 animate-gradient"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,179,8,0.1),transparent_50%)]"></div>
-        <div class="absolute inset-0 shine-effect opacity-50"></div>
-    </div>
-    
-    <!-- Sparkles Background -->
-    <div id="sparkles" class="fixed inset-0 pointer-events-none"></div>
+<body class="min-h-screen overflow-x-hidden relative" style="background:#000d1a;">
+
+    <!-- 3D Ocean WebGL Canvas -->
+    <canvas id="ocean-canvas"></canvas>
+
+    <!-- Ocean Overlay for depth -->
+    <div class="ocean-overlay"></div>
+
+    <!-- Caustic light -->
+    <div class="caustic-layer"></div>
+
+    <!-- Light rays -->
+    <div class="light-ray" style="left:10%; animation-duration:6s; animation-delay:0s;"></div>
+    <div class="light-ray" style="left:25%; animation-duration:8s; animation-delay:1.5s; width:60px;"></div>
+    <div class="light-ray" style="left:45%; animation-duration:7s; animation-delay:0.5s; width:100px;"></div>
+    <div class="light-ray" style="left:65%; animation-duration:9s; animation-delay:2s; width:50px;"></div>
+    <div class="light-ray" style="left:80%; animation-duration:6.5s; animation-delay:1s;"></div>
+
+    <!-- Foam -->
+    <div class="foam-layer"></div>
+
+    <!-- Sparkles -->
+    <div id="sparkles" class="fixed inset-0 pointer-events-none z-4" style="z-index:4;"></div>
 
     <!-- Running Text -->
-    <div class="fixed top-0 left-0 right-0 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black py-3 overflow-hidden shadow-2xl z-10 border-b-4 border-yellow-400">
+    <div class="ui-content fixed top-0 left-0 right-0 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black py-3 overflow-hidden shadow-2xl z-10 border-b-4 border-yellow-400">
         <div class="animate-marquee whitespace-nowrap">
             <span id="winnerText" class="text-sm md:text-base font-bold"></span>
         </div>
     </div>
 
     <!-- Sound Toggle -->
-    <button id="soundToggle" class="fixed top-20 right-4 bg-gradient-to-r from-yellow-600 to-yellow-500 p-3 rounded-full hover:from-yellow-500 hover:to-yellow-400 transition shadow-lg z-10 border-2 border-yellow-400">
+    <button id="soundToggle" class="ui-content fixed top-20 right-4 bg-gradient-to-r from-yellow-600 to-yellow-500 p-3 rounded-full hover:from-yellow-500 hover:to-yellow-400 transition shadow-lg z-10 border-2 border-yellow-400">
         <span id="soundIcon">🔊</span>
     </button>
 
-       <!-- Member Online Counter -->
-    <div class="fixed top-20 left-4 bg-gradient-to-r from-yellow-600/90 via-yellow-500/90 to-yellow-600/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-2xl z-10 border-2 border-yellow-400 animate-glow">
+    <!-- Member Online Counter -->
+    <div class="ui-content fixed top-20 left-4 bg-gradient-to-r from-yellow-600/90 via-yellow-500/90 to-yellow-600/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-2xl z-10 border-2 border-yellow-400 animate-glow">
         <div class="flex items-center gap-3">
             <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
             <div class="text-black font-bold">
@@ -103,7 +208,7 @@
     </div>
     
     <!-- Live Chat Button -->
-    <button id="liveChatBtn" class="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 px-5 rounded-full shadow-2xl z-20 transition transform hover:scale-110 animate-bounce-chat border-2 border-yellow-400">
+    <button id="liveChatBtn" class="ui-content fixed bottom-6 right-6 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 px-5 rounded-full shadow-2xl z-20 transition transform hover:scale-110 animate-bounce-chat border-2 border-yellow-400">
         <div class="flex flex-col items-center gap-1">
             <span class="text-2xl">⌯⌲</span>
             <span class="text-xs whitespace-nowrap">LIVE CHAT 24/7</span>
@@ -111,7 +216,7 @@
     </button>
 
     <!-- Main Container -->
-    <div id="app" class="min-h-screen flex items-center justify-center p-4 pt-20"></div>
+    <div id="app" class="ui-content min-h-screen flex items-center justify-center p-4 pt-20" style="z-index:5;"></div>
 
     <!-- Prize List Modal -->
     <div id="prizeModal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 overflow-y-auto">
@@ -132,7 +237,250 @@
     </div>
 
     <script>
-        
+        // =====================
+        // 3D OCEAN WITH THREE.JS
+        // =====================
+        (function() {
+            const canvas = document.getElementById('ocean-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000d1a, 1);
+
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x001428, 0.035);
+
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+            camera.position.set(0, 4, 12);
+            camera.lookAt(0, 0, 0);
+
+            // --- Ocean Geometry ---
+            const OCEAN_WIDTH = 100;
+            const OCEAN_DEPTH = 100;
+            const OCEAN_SEGS = 128;
+            const oceanGeo = new THREE.PlaneGeometry(OCEAN_WIDTH, OCEAN_DEPTH, OCEAN_SEGS, OCEAN_SEGS);
+            oceanGeo.rotateX(-Math.PI / 2);
+
+            // Store original positions
+            const posArr = oceanGeo.attributes.position.array;
+            const origY = new Float32Array(posArr.length / 3);
+            for (let i = 0; i < origY.length; i++) {
+                origY[i] = posArr[i * 3 + 1];
+            }
+
+            const oceanMat = new THREE.MeshPhongMaterial({
+                color: 0x0066bb,
+                specular: 0x88ddff,
+                shininess: 120,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.88,
+                wireframe: false,
+            });
+
+            const ocean = new THREE.Mesh(oceanGeo, oceanMat);
+            scene.add(ocean);
+
+            // --- Second deeper ocean layer ---
+            const deepGeo = new THREE.PlaneGeometry(OCEAN_WIDTH, OCEAN_DEPTH, 32, 32);
+            deepGeo.rotateX(-Math.PI / 2);
+            const deepMat = new THREE.MeshPhongMaterial({
+                color: 0x002244,
+                transparent: true,
+                opacity: 0.6,
+                side: THREE.DoubleSide,
+            });
+            const deepOcean = new THREE.Mesh(deepGeo, deepMat);
+            deepOcean.position.y = -1.5;
+            scene.add(deepOcean);
+
+            // --- Ambient + Directional Light ---
+            const ambientLight = new THREE.AmbientLight(0x003366, 1.2);
+            scene.add(ambientLight);
+
+            const sun = new THREE.DirectionalLight(0xffffff, 2.5);
+            sun.position.set(20, 30, -10);
+            scene.add(sun);
+
+            const moonLight = new THREE.DirectionalLight(0x4488ff, 1.0);
+            moonLight.position.set(-15, 20, 15);
+            scene.add(moonLight);
+
+            // Moving colored point light (simulates light shimmer)
+            const shimmerLight = new THREE.PointLight(0x00aaff, 3, 30);
+            shimmerLight.position.set(0, 5, 0);
+            scene.add(shimmerLight);
+
+            const shimmerLight2 = new THREE.PointLight(0xffdd44, 2, 20);
+            shimmerLight2.position.set(5, 3, -5);
+            scene.add(shimmerLight2);
+
+            // --- Foam particles on wave crests ---
+            const foamCount = 500;
+            const foamGeo = new THREE.BufferGeometry();
+            const foamPos = new Float32Array(foamCount * 3);
+            for (let i = 0; i < foamCount; i++) {
+                foamPos[i * 3] = (Math.random() - 0.5) * OCEAN_WIDTH;
+                foamPos[i * 3 + 1] = 0.3 + Math.random() * 0.4;
+                foamPos[i * 3 + 2] = (Math.random() - 0.5) * OCEAN_DEPTH;
+            }
+            foamGeo.setAttribute('position', new THREE.BufferAttribute(foamPos, 3));
+            const foamMat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.12,
+                transparent: true,
+                opacity: 0.5,
+            });
+            const foam = new THREE.Points(foamGeo, foamMat);
+            scene.add(foam);
+
+            // --- Underwater particles (bubbles) ---
+            const bubbleCount = 300;
+            const bubbleGeo = new THREE.BufferGeometry();
+            const bubblePos = new Float32Array(bubbleCount * 3);
+            const bubbleSpeeds = new Float32Array(bubbleCount);
+            for (let i = 0; i < bubbleCount; i++) {
+                bubblePos[i * 3] = (Math.random() - 0.5) * 20;
+                bubblePos[i * 3 + 1] = -5 + Math.random() * 5;
+                bubblePos[i * 3 + 2] = (Math.random() - 0.5) * 20;
+                bubbleSpeeds[i] = 0.005 + Math.random() * 0.015;
+            }
+            bubbleGeo.setAttribute('position', new THREE.BufferAttribute(bubblePos, 3));
+            const bubbleMat = new THREE.PointsMaterial({
+                color: 0xaaddff,
+                size: 0.08,
+                transparent: true,
+                opacity: 0.7,
+            });
+            const bubbles = new THREE.Points(bubbleGeo, bubbleMat);
+            scene.add(bubbles);
+
+            // --- Horizon sky gradient (background plane) ---
+            const skyGeo = new THREE.PlaneGeometry(200, 80);
+            const skyMat = new THREE.ShaderMaterial({
+                uniforms: { time: { value: 0 } },
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+                `,
+                fragmentShader: `
+                    varying vec2 vUv;
+                    uniform float time;
+                    void main() {
+                        vec3 topColor = vec3(0.0, 0.05, 0.2);
+                        vec3 horizonColor = vec3(0.0, 0.3, 0.6);
+                        vec3 color = mix(horizonColor, topColor, vUv.y);
+                        // slight shimmer
+                        float shimmer = 0.03 * sin(vUv.x * 20.0 + time * 0.5);
+                        color += shimmer;
+                        gl_FragColor = vec4(color, 1.0);
+                    }
+                `,
+                side: THREE.FrontSide,
+            });
+            const sky = new THREE.Mesh(skyGeo, skyMat);
+            sky.position.set(0, 10, -40);
+            scene.add(sky);
+
+            // Wave function
+            function wave(x, z, t) {
+                const a1 = 0.45 * Math.sin(0.4 * x + t * 0.9);
+                const a2 = 0.35 * Math.sin(0.35 * z + t * 0.7);
+                const a3 = 0.25 * Math.sin(0.25 * (x + z) + t * 1.1);
+                const a4 = 0.15 * Math.cos(0.5 * x - 0.3 * z + t * 1.3);
+                const a5 = 0.12 * Math.sin(0.7 * z - t * 0.6);
+                return a1 + a2 + a3 + a4 + a5;
+            }
+
+            // Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Camera gentle bob
+            let camT = 0;
+
+            // Animate
+            function animate() {
+                requestAnimationFrame(animate);
+                const t = performance.now() * 0.001;
+
+                // Update wave vertices
+                const pos = oceanGeo.attributes.position;
+                for (let i = 0; i < pos.count; i++) {
+                    const x = pos.getX(i);
+                    const z = pos.getZ(i);
+                    pos.setY(i, wave(x, z, t));
+                }
+                pos.needsUpdate = true;
+                oceanGeo.computeVertexNormals();
+
+                // Animate foam (ride the waves)
+                const fp = foamGeo.attributes.position;
+                for (let i = 0; i < foamCount; i++) {
+                    const fx = fp.getX(i);
+                    const fz = fp.getZ(i);
+                    fp.setY(i, wave(fx, fz, t) + 0.1 + 0.05 * Math.sin(t * 3 + i));
+                }
+                fp.needsUpdate = true;
+
+                // Animate bubbles rising
+                const bp = bubbleGeo.attributes.position;
+                for (let i = 0; i < bubbleCount; i++) {
+                    let by = bp.getY(i) + bubbleSpeeds[i];
+                    if (by > 0.5) {
+                        by = -5;
+                        bp.setX(i, (Math.random() - 0.5) * 20);
+                        bp.setZ(i, (Math.random() - 0.5) * 20);
+                    }
+                    bp.setY(i, by);
+                }
+                bp.needsUpdate = true;
+
+                // Shimmer lights animate
+                shimmerLight.position.x = 8 * Math.sin(t * 0.5);
+                shimmerLight.position.z = 8 * Math.cos(t * 0.4);
+                shimmerLight.intensity = 2.5 + 1.5 * Math.sin(t * 2);
+
+                shimmerLight2.position.x = -6 * Math.cos(t * 0.3);
+                shimmerLight2.position.z = 6 * Math.sin(t * 0.6);
+
+                // Sky shader
+                skyMat.uniforms.time.value = t;
+
+                // Gentle camera bob
+                camT += 0.005;
+                camera.position.y = 4 + 0.3 * Math.sin(camT);
+                camera.position.x = 0.5 * Math.sin(camT * 0.5);
+                camera.lookAt(0, 0.5, 0);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // CSS Bubbles (overlay)
+            function spawnCSSBubble() {
+                const b = document.createElement('div');
+                b.className = 'bubble';
+                const size = 4 + Math.random() * 16;
+                b.style.width = size + 'px';
+                b.style.height = size + 'px';
+                b.style.left = (Math.random() * 100) + '%';
+                b.style.bottom = '0';
+                const dur = 6 + Math.random() * 10;
+                b.style.animationDuration = dur + 's';
+                b.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(b);
+                setTimeout(() => b.remove(), (dur + 5) * 1000);
+            }
+            for (let i = 0; i < 20; i++) spawnCSSBubble();
+            setInterval(spawnCSSBubble, 1500);
+        })();
+    </script>
+
+    <script>
         const prizes = [
             { name: 'Saldo 100rb', value: 'Rp 100.000', icon: '💳' },
             { name: 'Saldo 150rb', value: 'Rp 150.000', icon: '💰' },
@@ -147,25 +495,22 @@
         let userId = '';
         let claimedUsers = JSON.parse(localStorage.getItem("CLAIMED_USERS")) || [];
         let soundEnabled = true;
-        let audioContext = null;
-        let bgMusicPlaying = false;
 
-        // Generate sparkles
         function createSparkles() {
             const container = document.getElementById('sparkles');
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 25; i++) {
                 const sparkle = document.createElement('div');
-                sparkle.textContent = '✨';
+                sparkle.textContent = ['✨','⭐','🌟','💫'][Math.floor(Math.random()*4)];
                 sparkle.className = 'sparkle animate-float';
                 sparkle.style.left = Math.random() * 100 + '%';
                 sparkle.style.top = Math.random() * 100 + '%';
                 sparkle.style.animationDelay = Math.random() * 5 + 's';
                 sparkle.style.animationDuration = (5 + Math.random() * 10) + 's';
+                sparkle.style.fontSize = (12 + Math.random() * 16) + 'px';
                 container.appendChild(sparkle);
             }
         }
 
-        // Generate winner text
         function generateUsername() {
             const prefixes = ['user_', 'member_', 'player_', 'lucky_', 'winner_', 'pro_', 'vip_', 'king_', 'ace_', 'star_'];
             const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
@@ -185,7 +530,6 @@
             document.getElementById('winnerText').textContent = text;
         }
 
-        // Sound functions
         function playSound(type) {
             if (!soundEnabled) return;
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -193,43 +537,37 @@
             const gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
-
             if (type === 'click') {
                 osc.frequency.setValueAtTime(600, ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.3, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.1);
+                osc.start(); osc.stop(ctx.currentTime + 0.1);
             } else if (type === 'win') {
                 const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((freq, index) => {
                     setTimeout(() => {
-                        const o = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        o.connect(g);
-                        g.connect(ctx.destination);
+                        const o = ctx.createOscillator(); const g = ctx.createGain();
+                        o.connect(g); g.connect(ctx.destination);
                         o.frequency.value = freq;
                         g.gain.setValueAtTime(0.2, ctx.currentTime);
                         g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                        o.start();
-                        o.stop(ctx.currentTime + 0.3);
+                        o.start(); o.stop(ctx.currentTime + 0.3);
                     }, index * 150);
                 });
             }
         }
 
-        // Render functions
         function renderWelcome() {
             return `
-                <div class="text-center relative z-10">
-                    <div class="mb-8 bg-gradient-to-br from-gray-800 to-black rounded-3xl p-8 shadow-2xl animate-glow border-4 border-yellow-500">
+                <div class="text-center relative">
+                    <div class="mb-8 bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl animate-glow border-4 border-yellow-500">
                         <div class="text-6xl md:text-8xl font-bold">
                             <span class="text-yellow-500">AJAIB</span><span class="text-white">4D</span>
                         </div>
                     </div>
                     <div class="mb-6">
-                        <img src="https://imgur.com/xchHvkH.png" class="w-80 h-80 animate-pulse-gold mx-auto">
+                        <img src="https://imgur.com/xchHvkH.png" class="w-80 h-80 animate-pulse-gold mx-auto" onerror="this.style.display='none'">
                     </div>
                     <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-500 mb-3">
                         HARTA KARUN
@@ -239,9 +577,9 @@
                         <span class="text-4xl text-yellow-500">﹏𓊝﹏</span>
                         <div class="h-1 w-20 bg-gradient-to-l from-transparent to-yellow-500"></div>
                     </div>
-                    <div class="bg-gradient-to-br from-gray-800 to-black rounded-2xl p-6 mb-8 max-w-lg mx-auto border-2 border-yellow-500 shadow-2xl">
+                    <div class="bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md rounded-2xl p-6 mb-8 max-w-lg mx-auto border-2 border-yellow-500 shadow-2xl">
                         <p class="text-white text-lg md:text-xl font-medium leading-relaxed">
-                                ⚓ HADIAH SPECIAL ⚓<br/>
+                            ⚓ HADIAH SPECIAL ⚓<br/>
                             <span class="text-yellow-400">LAKUKAN SPIN & MASUKAN USER ID</span><br/>
                             <span class="text-sm text-gray-300">Dapatkan Hadiah Besarmu segera</span>
                         </p>
@@ -259,8 +597,8 @@
 
         function renderInput() {
             return `
-                <div class="relative z-10">
-                    <div class="bg-gradient-to-br from-gray-800 to-black rounded-3xl p-8 shadow-2xl max-w-md w-full border-4 border-yellow-500">
+                <div class="relative">
+                    <div class="bg-gradient-to-br from-gray-800/90 to-black/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl max-w-md w-full border-4 border-yellow-500">
                         <div class="text-center mb-6">
                             <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">Masukkan User ID Mu</h2>
                             <p class="text-gray-400 text-sm">Untuk mengklaim hadiah</p>
@@ -288,8 +626,8 @@
                 `;
             }
             return `
-                <div class="text-center relative z-10">
-                    <div class="bg-gradient-to-br from-gray-800 to-black rounded-2xl p-6 mb-8 border-2 border-yellow-500">
+                <div class="text-center relative">
+                    <div class="bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md rounded-2xl p-6 mb-8 border-2 border-yellow-500">
                         <h2 class="text-2xl md:text-3xl font-bold text-yellow-400">
                             ⚔️ PILIH SATU BOX JARAHANMU ⚔️
                         </h2>
@@ -302,89 +640,53 @@
         }
 
         function renderResult(prize) {
-    const userId = localStorage.getItem("USER_ID") || "Unknown";
-
-    return `
-        <div class="relative z-10">
-            <div class="bg-gradient-to-br from-gray-800 to-black rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full text-center border-4 border-yellow-500">
-
-                <!-- USER ID (SEPERTI GAMBAR) -->
-                <div class="absolute top-4 left-4 bg-green-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg">
-                    User ID: ${userId}
+            const uid = localStorage.getItem("USER_ID") || "Unknown";
+            return `
+                <div class="relative">
+                    <div class="bg-gradient-to-br from-gray-800/90 to-black/90 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full text-center border-4 border-yellow-500">
+                        <div class="absolute top-4 left-4 bg-green-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg">
+                            User ID: ${uid}
+                        </div>
+                        <div class="text-3xl mb-6 animate-bounce mt-8">${prize.icon}</div>
+                        <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-300 mb-3">
+                            SELAMAT! 🎉
+                        </h2>
+                        <p class="text-xl text-gray-300 mb-4">Anda mendapatkan:</p>
+                        <div class="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black py-6 px-6 rounded-2xl mb-6 shadow-xl border-4 border-yellow-400">
+                            <p class="text-3xl font-bold">${prize.value}</p>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-6">💬 Klaim hadiah sekarang juga!</p>
+                        <button id="claimBtn" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-4 rounded-xl text-xl mb-3 shadow-lg transform hover:scale-105 transition border-2 border-yellow-400">
+                            🎁 Klaim Hadiah Sekarang
+                        </button>
+                        <button id="resetBtn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base transition border-2 border-gray-500">
+                            🏠 Kembali ke Halaman Utama
+                        </button>
+                    </div>
                 </div>
-
-                <div class="text-3xl mb-6 animate-bounce">${prize.icon}</div>
-
-                <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-300 mb-3">
-                    SELAMAT! 🎉
-                </h2>
-
-                <p class="text-xl text-gray-300 mb-4">Anda mendapatkan:</p>
-
-                <div class="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black py-6 px-6 rounded-2xl mb-6 shadow-xl border-4 border-yellow-400">
-                    <p class="text-3xl font-bold">${prize.value}</p>
-                </div>
-
-                <p class="text-sm text-gray-400 mb-6">💬 Klaim hadiah sekarang juga!</p>
-
-                <button id="claimBtn" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-4 rounded-xl text-xl mb-3 shadow-lg transform hover:scale-105 transition border-2 border-yellow-400">
-                    🎁 Klaim Hadiah Sekarang
-                </button>
-
-                <button id="resetBtn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base transition border-2 border-gray-500">
-                    🏠 Kembali ke Halaman Utama
-                </button>
-
-            </div>
-        </div>
-    `;
-}
+            `;
+        }
 
         function render() {
             const app = document.getElementById('app');
             if (stage === 'welcome') {
                 app.innerHTML = renderWelcome();
-                document.getElementById('startBtn').onclick = () => {
-                    playSound('click');
-                    stage = 'input';
-                    render();
-                };
-                document.getElementById('showPrizesBtn').onclick = () => {
-                    playSound('click');
-                    showPrizeModal();
-                };
+                document.getElementById('startBtn').onclick = () => { playSound('click'); stage = 'input'; render(); };
+                document.getElementById('showPrizesBtn').onclick = () => { playSound('click'); showPrizeModal(); };
             } else if (stage === 'input') {
                 app.innerHTML = renderInput();
                 document.getElementById('continueBtn').onclick = () => {
                     playSound('click');
                     const inputValue = document.getElementById('userIdInput').value.trim();
                     const errorMsg = document.getElementById('errorMsg');
-                    
-                    if (!inputValue) {
-                        errorMsg.textContent = '⚠️ Silahkan masukkan User ID Anda!';
-                        errorMsg.classList.remove('hidden');
-                        return;
-                    }
-                    
-                   const normalizedUserId = inputValue.toLowerCase();
-
-                    if (claimedUsers.includes(normalizedUserId)) {
-                        errorMsg.textContent = '⚠️ User ID ini sudah pernah mengklaim hadiah!';
-                        errorMsg.classList.remove('hidden');
-                        return;
-                    }
-
-                    // ✅ SIMPAN USER ID KE STATE & LOCALSTORAGE
-                        userId = normalizedUserId;
-                        localStorage.setItem("USER_ID", userId);
-
-                    // ✅ KUNCI USER ID LANGSUNG (ANTI REFRESH)
-                        claimedUsers.push(normalizedUserId);
-                        localStorage.setItem("CLAIMED_USERS", JSON.stringify(claimedUsers));
-
-                        stage = 'select';
-                        render();
-
+                    if (!inputValue) { errorMsg.textContent = '⚠️ Silahkan masukkan User ID Anda!'; errorMsg.classList.remove('hidden'); return; }
+                    const normalizedUserId = inputValue.toLowerCase();
+                    if (claimedUsers.includes(normalizedUserId)) { errorMsg.textContent = '⚠️ User ID ini sudah pernah mengklaim hadiah!'; errorMsg.classList.remove('hidden'); return; }
+                    userId = normalizedUserId;
+                    localStorage.setItem("USER_ID", userId);
+                    claimedUsers.push(normalizedUserId);
+                    localStorage.setItem("CLAIMED_USERS", JSON.stringify(claimedUsers));
+                    stage = 'select'; render();
                 };
             } else if (stage === 'select') {
                 app.innerHTML = renderBoxSelection();
@@ -393,7 +695,6 @@
                         playSound('click');
                         this.classList.add('scale-125', 'rotate-12', 'animate-pulse');
                         document.querySelectorAll('.box-btn').forEach(b => b.disabled = true);
-                        
                         setTimeout(() => {
                             const realPrizes = [
                                 { name: 'Saldo 100rb', value: 'Rp 100.000', icon: '💸' },
@@ -402,21 +703,11 @@
                                 { name: 'Saldo 500rb', value: 'Rp 500.000', icon: '💸' }
                             ];
                             const prize = realPrizes[Math.floor(Math.random() * realPrizes.length)];
-                            claimedUsers.push(userId.trim().toLowerCase());
                             playSound('win');
                             stage = 'result';
                             app.innerHTML = renderResult(prize);
-                            
-                            document.getElementById('claimBtn').onclick = () => {
-                                playSound('click');
-                                window.open('https://one.ajaibraih.com/', '_blank');
-                            };
-                            document.getElementById('resetBtn').onclick = () => {
-                                playSound('click');
-                                stage = 'welcome';
-                                userId = '';
-                                render();
-                            };
+                            document.getElementById('claimBtn').onclick = () => { playSound('click'); window.open('https://one.ajaibraih.com/', '_blank'); };
+                            document.getElementById('resetBtn').onclick = () => { playSound('click'); stage = 'welcome'; userId = ''; render(); };
                         }, 1500);
                     };
                 });
@@ -427,7 +718,7 @@
             const modal = document.getElementById('prizeModal');
             const prizeList = document.getElementById('prizeList');
             prizeList.innerHTML = prizes.map(prize => `
-                <div class="bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-2xl p-6 border-4 border-yellow-400 shadow-xl transform hover:scale-102 transition duration-300">
+                <div class="bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-2xl p-6 border-4 border-yellow-400 shadow-xl">
                     <div class="text-center">
                         <div class="text-6xl mb-3">${prize.icon}</div>
                         <h3 class="text-xl font-bold text-black mb-2">${prize.name}</h3>
@@ -440,23 +731,19 @@
             modal.classList.remove('hidden');
         }
 
-        // Event listeners
         document.getElementById('soundToggle').onclick = () => {
             soundEnabled = !soundEnabled;
             document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
         };
-
         document.getElementById('liveChatBtn').onclick = () => {
             playSound('click');
-            window.open('https://static.zdassets.com/web_widget/latest/liveChat.html?v=10#key=hokiajaib4d.zendesk.com&settings=JTdCJTIyd2ViV2lkZ2V0JTIyJTNBJTdCJTIyY2hhdCUyMiUzQSU3QiUyMnRpdGxlJTIyJTNBbnVsbCUyQyUyMm1lbnVPcHRpb25zJTIyJTNBJTdCJTIyZW1haWxUcmFuc2NyaXB0JTIyJTNBdHJ1ZSU3RCUyQyUyMmRlcGFydG1lbnRzJTIyJTNBJTdCJTdEJTJDJTIycHJlY2hhdEZvcm0lMjIlM0ElN0IlMjJkZXBhcnRtZW50TGFiZWwlMjIlM0FudWxsJTJDJTIyZ3JlZXRpbmclMjIlM0FudWxsJTdEJTJDJTIyb2ZmbGluZUZvcm0lMjIlM0ElN0IlMjJncmVldGluZyUyMiUzQW51bGwlN0QlMkMlMjJjb25jaWVyZ2UlMjIlM0ElN0IlMjJhdmF0YXJQYXRoJTIyJTNBbnVsbCUyQyUyMm5hbWUlMjIlM0FudWxsJTJDJTIydGl0bGUlMjIlM0FudWxsJTdEJTdEJTJDJTIyY29sb3IlMjIlM0ElN0IlMjJhcnRpY2xlTGlua3MlMjIlM0ElMjIlMjIlMkMlMjJidXR0b24lMjIlM0ElMjIlMjIlMkMlMjJoZWFkZXIlMjIlM0ElMjIlMjIlMkMlMjJsYXVuY2hlciUyMiUzQSUyMiUyMiUyQyUyMmxhdW5jaGVyVGV4dCUyMiUzQSUyMiUyMiUyQyUyMnJlc3VsdExpc3RzJTIyJTNBJTIyJTIyJTJDJTIydGhlbWUlMjIlM0FudWxsJTdEJTdEJTdE&&locale=en-US&title=Web%20Widget%20Live%20Chat');
+            window.open('https://static.zdassets.com/web_widget/latest/liveChat.html?v=10#key=hokiajaib4d.zendesk.com', '_blank');
         };
-
         document.getElementById('closePrizeModal').onclick = () => {
             playSound('click');
             document.getElementById('prizeModal').classList.add('hidden');
         };
 
-        // Initialize
         createSparkles();
         updateWinnerText();
         setInterval(updateWinnerText, 12000);
@@ -464,6 +751,3 @@
     </script>
 </body>
 </html>
-
-
-
