@@ -8,73 +8,161 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap');
+
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
-        .animate-marquee {
-            display: inline-block;
-            animation: marquee 40s linear infinite;
-        }
+        .animate-marquee { display: inline-block; animation: marquee 40s linear infinite; }
+
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-30px) rotate(180deg); }
         }
-        .animate-float {
-            animation: float 8s ease-in-out infinite;
+        .animate-float { animation: float 8s ease-in-out infinite; }
+
+        @keyframes glow-gold {
+            0%, 100% { box-shadow: 0 0 20px rgba(234,179,8,0.5), 0 0 40px rgba(234,179,8,0.2), inset 0 0 20px rgba(234,179,8,0.05); }
+            50% { box-shadow: 0 0 40px rgba(234,179,8,0.8), 0 0 80px rgba(234,179,8,0.4), inset 0 0 30px rgba(234,179,8,0.1); }
         }
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.6), 0 0 60px rgba(234, 179, 8, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(234, 179, 8, 0.8), 0 0 100px rgba(234, 179, 8, 0.5); }
-        }
-        .animate-glow {
-            animation: glow 2s ease-in-out infinite;
-        }
+        .animate-glow { animation: glow-gold 2s ease-in-out infinite; }
+
         @keyframes pulse-gold {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-        .animate-pulse-gold {
-            animation: pulse-gold 2s ease-in-out infinite;
-        }
+        .animate-pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+
         @keyframes bounce-chat {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
-        .animate-bounce-chat {
-            animation: bounce-chat 2s ease-in-out infinite;
-        }
+        .animate-bounce-chat { animation: bounce-chat 2s ease-in-out infinite; }
+
         .sparkle {
-            position: absolute;
-            font-size: 20px;
-            opacity: 0.4;
-            color: #eab308;
-            pointer-events: none;
+            position: absolute; font-size: 20px; opacity: 0.4;
+            color: #eab308; pointer-events: none;
         }
 
-        /* 3D Ocean Canvas */
-        #ocean-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+        /* ===== GLASS BUTTONS ===== */
+        .glass-btn {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            font-weight: 800;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .glass-btn::before {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .glass-btn:hover::before { left: 100%; }
+        .glass-btn:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(234,179,8,0.3);
+        }
+        .glass-btn:active { transform: scale(0.97) !important; }
+
+        .glass-btn-gold {
+            background: linear-gradient(135deg, rgba(234,179,8,0.25), rgba(180,120,0,0.12));
+            border: 1px solid rgba(234,179,8,0.45);
+            box-shadow: 0 0 18px rgba(234,179,8,0.18), inset 0 1px 0 rgba(255,215,0,0.25);
+            color: #fde68a;
+        }
+        .glass-btn-gold:hover {
+            background: linear-gradient(135deg, rgba(234,179,8,0.4), rgba(180,120,0,0.25));
+            border-color: rgba(234,179,8,0.9);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 40px rgba(234,179,8,0.5);
+            color: #fff;
         }
 
-        /* Overlay gradient on top of ocean for readability */
+        .glass-btn-blue {
+            background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(29,78,216,0.12));
+            border: 1px solid rgba(96,165,250,0.35);
+            box-shadow: 0 0 15px rgba(59,130,246,0.15), inset 0 1px 0 rgba(147,197,253,0.25);
+            color: #bfdbfe;
+        }
+        .glass-btn-blue:hover {
+            background: linear-gradient(135deg, rgba(59,130,246,0.4), rgba(29,78,216,0.28));
+            border-color: rgba(147,197,253,0.75);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 30px rgba(59,130,246,0.5);
+            color: #fff;
+        }
+
+        .glass-btn-red {
+            background: linear-gradient(135deg, rgba(239,68,68,0.25), rgba(185,28,28,0.12));
+            border: 1px solid rgba(252,165,165,0.35);
+            box-shadow: 0 0 15px rgba(239,68,68,0.15), inset 0 1px 0 rgba(252,165,165,0.25);
+            color: #fecaca;
+        }
+        .glass-btn-red:hover {
+            background: linear-gradient(135deg, rgba(239,68,68,0.4), rgba(185,28,28,0.28));
+            border-color: rgba(252,165,165,0.75);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 30px rgba(239,68,68,0.5);
+            color: #fff;
+        }
+
+        /* BOX buttons glass */
+        .box-btn {
+            position: relative;
+            background: linear-gradient(135deg, rgba(234,179,8,0.18), rgba(80,40,0,0.1), rgba(234,179,8,0.12));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(234,179,8,0.35);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 12px rgba(234,179,8,0.12), inset 0 1px 0 rgba(255,215,0,0.18);
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .box-btn::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(255,215,0,0.12) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .box-btn:hover {
+            transform: translateY(-8px) scale(1.1) rotate(3deg);
+            border-color: rgba(234,179,8,0.9);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(234,179,8,0.4), inset 0 1px 0 rgba(255,215,0,0.35);
+        }
+        .box-btn:hover::after { opacity: 1; }
+
+        /* Glass panels */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .glass-panel-gold {
+            background: linear-gradient(135deg, rgba(234,179,8,0.08), rgba(0,0,0,0.4));
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(234,179,8,0.25);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 30px rgba(234,179,8,0.08), inset 0 1px 0 rgba(255,215,0,0.12);
+        }
+
+        /* Ocean */
+        #ocean-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         .ocean-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            background: 
-                radial-gradient(ellipse at 50% 0%, rgba(0,30,60,0.3) 0%, transparent 60%),
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background: radial-gradient(ellipse at 50% 0%, rgba(0,30,60,0.3) 0%, transparent 60%),
                 radial-gradient(ellipse at 50% 100%, rgba(0,10,30,0.6) 0%, transparent 60%),
                 linear-gradient(180deg, rgba(0,20,50,0.2) 0%, rgba(0,5,20,0.5) 100%);
-            pointer-events: none;
         }
 
-        /* Foam/bubble particles */
         @keyframes bubble-rise {
             0% { transform: translateY(100vh) scale(0); opacity: 0; }
             10% { opacity: 0.6; }
@@ -82,632 +170,585 @@
             100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
         }
         .bubble {
-            position: fixed;
-            border-radius: 50%;
+            position: fixed; border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(100,200,255,0.2));
             border: 1px solid rgba(255,255,255,0.4);
-            pointer-events: none;
-            z-index: 2;
+            pointer-events: none; z-index: 2;
             animation: bubble-rise linear infinite;
         }
-
-        /* Rays of light underwater */
         @keyframes ray-shift {
             0%, 100% { opacity: 0.05; transform: skewX(-5deg) scaleX(1); }
             50% { opacity: 0.15; transform: skewX(5deg) scaleX(1.2); }
         }
         .light-ray {
-            position: fixed;
-            top: 0;
-            width: 80px;
-            height: 100vh;
+            position: fixed; top: 0; width: 80px; height: 100vh;
             background: linear-gradient(180deg, rgba(100,210,255,0.3) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 2;
+            pointer-events: none; z-index: 2;
             animation: ray-shift ease-in-out infinite;
             transform-origin: top center;
         }
-
         body { overflow-x: hidden; }
-
-        /* Adjust all UI content z-index above ocean */
         .ui-content { position: relative; z-index: 5; }
 
-        @keyframes shine {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        .shine-effect {
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
-            background-size: 200% 100%;
-            animation: shine 3s infinite;
-        }
-
-        /* Foam wave at bottom */
         @keyframes foam-wave {
             0%, 100% { transform: scaleX(1) translateX(0); }
             50% { transform: scaleX(1.1) translateX(-5%); }
         }
         .foam-layer {
-            position: fixed;
-            bottom: 0;
-            left: -10%;
-            width: 120%;
-            height: 80px;
+            position: fixed; bottom: 0; left: -10%; width: 120%; height: 80px;
             background: radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.15) 0%, transparent 70%);
             animation: foam-wave 4s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 3;
+            pointer-events: none; z-index: 3;
         }
-
-        /* Caustic light pattern */
         @keyframes caustic {
             0% { transform: rotate(0deg) scale(1); opacity: 0.04; }
             50% { transform: rotate(180deg) scale(1.3); opacity: 0.09; }
             100% { transform: rotate(360deg) scale(1); opacity: 0.04; }
         }
         .caustic-layer {
-            position: fixed;
-            inset: 0;
-            background: repeating-conic-gradient(
-                from 0deg at 50% 50%,
-                rgba(0,180,255,0.05) 0deg 30deg,
-                rgba(0,100,200,0.02) 30deg 60deg
-            );
+            position: fixed; inset: 0;
+            background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(0,180,255,0.05) 0deg 30deg, rgba(0,100,200,0.02) 30deg 60deg);
             animation: caustic 20s linear infinite;
+            pointer-events: none; z-index: 2;
+        }
+
+        /* Music button */
+        @keyframes music-pulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(168,85,247,0.4), 0 0 25px rgba(168,85,247,0.18); }
+            50% { box-shadow: 0 0 25px rgba(168,85,247,0.8), 0 0 50px rgba(168,85,247,0.4); }
+        }
+        .glass-btn-music {
+            background: linear-gradient(135deg, rgba(168,85,247,0.22), rgba(109,40,217,0.12));
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(196,181,253,0.35);
+            box-shadow: 0 0 12px rgba(168,85,247,0.25);
+            color: #e9d5ff; font-weight: 800; overflow: hidden;
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        .glass-btn-music.playing { animation: music-pulse 1.5s ease-in-out infinite; }
+        .glass-btn-music:hover {
+            background: linear-gradient(135deg, rgba(168,85,247,0.38), rgba(109,40,217,0.28));
+            border-color: rgba(196,181,253,0.75); color: #fff;
+            transform: scale(1.08);
+        }
+
+        /* Flying notes */
+        @keyframes note-fly {
+            0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(-70px) scale(1.6) rotate(25deg); }
+        }
+        .music-note { position: fixed; font-size: 22px; pointer-events: none; z-index: 100; animation: note-fly 1.4s ease-out forwards; }
+
+        /* Ripple */
+        @keyframes ripple-expand { to { transform: scale(4); opacity: 0; } }
+        .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: scale(0); animation: ripple-expand 0.6s linear;
             pointer-events: none;
-            z-index: 2;
         }
     </style>
 </head>
 <body class="min-h-screen overflow-x-hidden relative" style="background:#000d1a;">
 
-    <!-- 3D Ocean WebGL Canvas -->
     <canvas id="ocean-canvas"></canvas>
-
-    <!-- Ocean Overlay for depth -->
     <div class="ocean-overlay"></div>
-
-    <!-- Caustic light -->
     <div class="caustic-layer"></div>
-
-    <!-- Light rays -->
-    <div class="light-ray" style="left:10%; animation-duration:6s; animation-delay:0s;"></div>
+    <div class="light-ray" style="left:10%; animation-duration:6s;"></div>
     <div class="light-ray" style="left:25%; animation-duration:8s; animation-delay:1.5s; width:60px;"></div>
     <div class="light-ray" style="left:45%; animation-duration:7s; animation-delay:0.5s; width:100px;"></div>
     <div class="light-ray" style="left:65%; animation-duration:9s; animation-delay:2s; width:50px;"></div>
     <div class="light-ray" style="left:80%; animation-duration:6.5s; animation-delay:1s;"></div>
-
-    <!-- Foam -->
     <div class="foam-layer"></div>
-
-    <!-- Sparkles -->
-    <div id="sparkles" class="fixed inset-0 pointer-events-none z-4" style="z-index:4;"></div>
+    <div id="sparkles" class="fixed inset-0 pointer-events-none" style="z-index:4;"></div>
 
     <!-- Running Text -->
-    <div class="ui-content fixed top-0 left-0 right-0 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black py-3 overflow-hidden shadow-2xl z-10 border-b-4 border-yellow-400">
+    <div class="ui-content fixed top-0 left-0 right-0 overflow-hidden z-10" style="background:linear-gradient(90deg,rgba(100,60,0,0.55),rgba(180,130,0,0.45),rgba(100,60,0,0.55));backdrop-filter:blur(14px);border-bottom:1px solid rgba(234,179,8,0.3);padding:10px 0;">
         <div class="animate-marquee whitespace-nowrap">
-            <span id="winnerText" class="text-sm md:text-base font-bold"></span>
+            <span id="winnerText" class="text-sm font-bold" style="color:#fde68a;"></span>
         </div>
     </div>
 
-    <!-- Sound Toggle -->
-    <button id="soundToggle" class="ui-content fixed top-20 right-4 bg-gradient-to-r from-yellow-600 to-yellow-500 p-3 rounded-full hover:from-yellow-500 hover:to-yellow-400 transition shadow-lg z-10 border-2 border-yellow-400">
+    <!-- Controls -->
+    <button id="soundToggle" class="ui-content glass-btn-music fixed top-16 right-4 p-3 rounded-full z-10 text-lg">
         <span id="soundIcon">🔊</span>
     </button>
+    <button id="musicToggle" class="ui-content glass-btn-music fixed top-32 right-4 p-3 rounded-full z-10 text-lg">
+        <span id="musicIcon">🎵</span>
+    </button>
 
-    <!-- Member Online Counter -->
-    <div class="ui-content fixed top-20 left-4 bg-gradient-to-r from-yellow-600/90 via-yellow-500/90 to-yellow-600/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-2xl z-10 border-2 border-yellow-400 animate-glow">
+    <!-- Member Counter -->
+    <div class="ui-content fixed top-16 left-4 glass-panel-gold px-5 py-3 rounded-2xl z-10 animate-glow">
         <div class="flex items-center gap-3">
-            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-            <div class="text-black font-bold">
-                <div class="text-xs opacity-80">Member Online</div>
-                <div class="text-2xl font-black" id="memberCount">1,106</div>
+            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse" style="box-shadow:0 0 8px rgba(74,222,128,0.7);"></div>
+            <div style="color:#fde68a;font-weight:800;">
+                <div style="font-size:11px;opacity:0.7;">Member Online</div>
+                <div style="font-size:22px;color:#fbbf24;" id="memberCount">1,106</div>
             </div>
         </div>
     </div>
-    
-    <!-- Live Chat Button -->
-    <button id="liveChatBtn" class="ui-content fixed bottom-6 right-6 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 px-5 rounded-full shadow-2xl z-20 transition transform hover:scale-110 animate-bounce-chat border-2 border-yellow-400">
+
+    <!-- Live Chat -->
+    <button id="liveChatBtn" class="ui-content glass-btn glass-btn-gold fixed bottom-6 right-6 py-3 px-5 rounded-full z-20 animate-bounce-chat">
         <div class="flex flex-col items-center gap-1">
             <span class="text-2xl">⌯⌲</span>
             <span class="text-xs whitespace-nowrap">LIVE CHAT 24/7</span>
         </div>
     </button>
 
-    <!-- Main Container -->
+    <!-- App -->
     <div id="app" class="ui-content min-h-screen flex items-center justify-center p-4 pt-20" style="z-index:5;"></div>
 
-    <!-- Prize List Modal -->
-    <div id="prizeModal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 overflow-y-auto">
+    <!-- Prize Modal -->
+    <div id="prizeModal" class="hidden fixed inset-0 z-50 overflow-y-auto" style="background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);">
         <div class="min-h-screen flex items-center justify-center p-4 py-8">
-            <div class="bg-gradient-to-br from-gray-800 to-black rounded-3xl p-6 md:p-8 max-w-2xl w-full border-4 border-yellow-500 shadow-2xl">
+            <div class="glass-panel-gold rounded-3xl p-6 md:p-8 max-w-2xl w-full">
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-300 mb-2">
-                        🎁 DAFTAR HADIAH 🎁
-                    </h2>
-                    <p class="text-gray-300 text-sm">Hadiah Menarik Menanti Anda!</p>
+                    <h2 class="text-3xl font-bold mb-2" style="font-family:'Cinzel',serif;background:linear-gradient(135deg,#fbbf24,#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎁 DAFTAR HADIAH 🎁</h2>
+                    <p style="color:rgba(253,230,138,0.6);font-size:13px;">Hadiah Menarik Menanti Anda!</p>
                 </div>
                 <div id="prizeList" class="space-y-4 mb-6"></div>
-                <button id="closePrizeModal" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold py-4 rounded-xl text-xl shadow-lg transform hover:scale-105 transition border-2 border-red-400">
-                    ❌ Tutup
-                </button>
+                <button id="closePrizeModal" class="glass-btn glass-btn-red w-full py-4 rounded-xl text-xl">❌ Tutup</button>
             </div>
         </div>
     </div>
 
+    <!-- 3D OCEAN -->
     <script>
-        // =====================
-        // 3D OCEAN WITH THREE.JS
-        // =====================
-        (function() {
-            const canvas = document.getElementById('ocean-canvas');
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x000d1a, 1);
+    (function() {
+        const canvas = document.getElementById('ocean-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000d1a, 1);
 
-            const scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x001428, 0.035);
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x001428, 0.035);
 
-            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
-            camera.position.set(0, 4, 12);
-            camera.lookAt(0, 0, 0);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+        camera.position.set(0, 4, 12);
 
-            // --- Ocean Geometry ---
-            const OCEAN_WIDTH = 100;
-            const OCEAN_DEPTH = 100;
-            const OCEAN_SEGS = 128;
-            const oceanGeo = new THREE.PlaneGeometry(OCEAN_WIDTH, OCEAN_DEPTH, OCEAN_SEGS, OCEAN_SEGS);
-            oceanGeo.rotateX(-Math.PI / 2);
+        const oceanGeo = new THREE.PlaneGeometry(100, 100, 128, 128);
+        oceanGeo.rotateX(-Math.PI / 2);
+        const oceanMat = new THREE.MeshPhongMaterial({ color: 0x0066bb, specular: 0x88ddff, shininess: 120, side: THREE.DoubleSide, transparent: true, opacity: 0.88 });
+        scene.add(new THREE.Mesh(oceanGeo, oceanMat));
 
-            // Store original positions
-            const posArr = oceanGeo.attributes.position.array;
-            const origY = new Float32Array(posArr.length / 3);
-            for (let i = 0; i < origY.length; i++) {
-                origY[i] = posArr[i * 3 + 1];
-            }
+        const deepGeo = new THREE.PlaneGeometry(100, 100, 32, 32);
+        deepGeo.rotateX(-Math.PI / 2);
+        const deepMesh = new THREE.Mesh(deepGeo, new THREE.MeshPhongMaterial({ color: 0x002244, transparent: true, opacity: 0.6, side: THREE.DoubleSide }));
+        deepMesh.position.y = -1.5; scene.add(deepMesh);
 
-            const oceanMat = new THREE.MeshPhongMaterial({
-                color: 0x0066bb,
-                specular: 0x88ddff,
-                shininess: 120,
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: 0.88,
-                wireframe: false,
-            });
+        scene.add(new THREE.AmbientLight(0x003366, 1.2));
+        const sun = new THREE.DirectionalLight(0xffffff, 2.5); sun.position.set(20, 30, -10); scene.add(sun);
+        const moon = new THREE.DirectionalLight(0x4488ff, 1.0); moon.position.set(-15, 20, 15); scene.add(moon);
+        const s1 = new THREE.PointLight(0x00aaff, 3, 30); s1.position.set(0, 5, 0); scene.add(s1);
+        const s2 = new THREE.PointLight(0xffdd44, 2, 20); s2.position.set(5, 3, -5); scene.add(s2);
 
-            const ocean = new THREE.Mesh(oceanGeo, oceanMat);
-            scene.add(ocean);
+        const foamCount = 500, fGeo = new THREE.BufferGeometry(), fPos = new Float32Array(foamCount * 3);
+        for (let i = 0; i < foamCount; i++) { fPos[i*3]=(Math.random()-0.5)*100; fPos[i*3+1]=0.35; fPos[i*3+2]=(Math.random()-0.5)*100; }
+        fGeo.setAttribute('position', new THREE.BufferAttribute(fPos, 3));
+        scene.add(new THREE.Points(fGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.5 })));
 
-            // --- Second deeper ocean layer ---
-            const deepGeo = new THREE.PlaneGeometry(OCEAN_WIDTH, OCEAN_DEPTH, 32, 32);
-            deepGeo.rotateX(-Math.PI / 2);
-            const deepMat = new THREE.MeshPhongMaterial({
-                color: 0x002244,
-                transparent: true,
-                opacity: 0.6,
-                side: THREE.DoubleSide,
-            });
-            const deepOcean = new THREE.Mesh(deepGeo, deepMat);
-            deepOcean.position.y = -1.5;
-            scene.add(deepOcean);
+        const bCount = 300, bGeo = new THREE.BufferGeometry(), bPos = new Float32Array(bCount * 3), bSpd = new Float32Array(bCount);
+        for (let i = 0; i < bCount; i++) { bPos[i*3]=(Math.random()-0.5)*20; bPos[i*3+1]=-5+Math.random()*5; bPos[i*3+2]=(Math.random()-0.5)*20; bSpd[i]=0.005+Math.random()*0.015; }
+        bGeo.setAttribute('position', new THREE.BufferAttribute(bPos, 3));
+        scene.add(new THREE.Points(bGeo, new THREE.PointsMaterial({ color: 0xaaddff, size: 0.08, transparent: true, opacity: 0.7 })));
 
-            // --- Ambient + Directional Light ---
-            const ambientLight = new THREE.AmbientLight(0x003366, 1.2);
-            scene.add(ambientLight);
+        const skyMat = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0 } },
+            vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+            fragmentShader: `varying vec2 vUv; uniform float time; void main(){ vec3 c=mix(vec3(0.0,0.3,0.6),vec3(0.0,0.05,0.2),vUv.y); c+=0.03*sin(vUv.x*20.0+time*0.5); gl_FragColor=vec4(c,1.0); }`,
+        });
+        const sky = new THREE.Mesh(new THREE.PlaneGeometry(200, 80), skyMat);
+        sky.position.set(0, 10, -40); scene.add(sky);
 
-            const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-            sun.position.set(20, 30, -10);
-            scene.add(sun);
+        function wave(x, z, t) {
+            return 0.45*Math.sin(0.4*x+t*0.9) + 0.35*Math.sin(0.35*z+t*0.7) + 0.25*Math.sin(0.25*(x+z)+t*1.1) + 0.15*Math.cos(0.5*x-0.3*z+t*1.3) + 0.12*Math.sin(0.7*z-t*0.6);
+        }
 
-            const moonLight = new THREE.DirectionalLight(0x4488ff, 1.0);
-            moonLight.position.set(-15, 20, 15);
-            scene.add(moonLight);
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
-            // Moving colored point light (simulates light shimmer)
-            const shimmerLight = new THREE.PointLight(0x00aaff, 3, 30);
-            shimmerLight.position.set(0, 5, 0);
-            scene.add(shimmerLight);
-
-            const shimmerLight2 = new THREE.PointLight(0xffdd44, 2, 20);
-            shimmerLight2.position.set(5, 3, -5);
-            scene.add(shimmerLight2);
-
-            // --- Foam particles on wave crests ---
-            const foamCount = 500;
-            const foamGeo = new THREE.BufferGeometry();
-            const foamPos = new Float32Array(foamCount * 3);
-            for (let i = 0; i < foamCount; i++) {
-                foamPos[i * 3] = (Math.random() - 0.5) * OCEAN_WIDTH;
-                foamPos[i * 3 + 1] = 0.3 + Math.random() * 0.4;
-                foamPos[i * 3 + 2] = (Math.random() - 0.5) * OCEAN_DEPTH;
-            }
-            foamGeo.setAttribute('position', new THREE.BufferAttribute(foamPos, 3));
-            const foamMat = new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 0.12,
-                transparent: true,
-                opacity: 0.5,
-            });
-            const foam = new THREE.Points(foamGeo, foamMat);
-            scene.add(foam);
-
-            // --- Underwater particles (bubbles) ---
-            const bubbleCount = 300;
-            const bubbleGeo = new THREE.BufferGeometry();
-            const bubblePos = new Float32Array(bubbleCount * 3);
-            const bubbleSpeeds = new Float32Array(bubbleCount);
-            for (let i = 0; i < bubbleCount; i++) {
-                bubblePos[i * 3] = (Math.random() - 0.5) * 20;
-                bubblePos[i * 3 + 1] = -5 + Math.random() * 5;
-                bubblePos[i * 3 + 2] = (Math.random() - 0.5) * 20;
-                bubbleSpeeds[i] = 0.005 + Math.random() * 0.015;
-            }
-            bubbleGeo.setAttribute('position', new THREE.BufferAttribute(bubblePos, 3));
-            const bubbleMat = new THREE.PointsMaterial({
-                color: 0xaaddff,
-                size: 0.08,
-                transparent: true,
-                opacity: 0.7,
-            });
-            const bubbles = new THREE.Points(bubbleGeo, bubbleMat);
-            scene.add(bubbles);
-
-            // --- Horizon sky gradient (background plane) ---
-            const skyGeo = new THREE.PlaneGeometry(200, 80);
-            const skyMat = new THREE.ShaderMaterial({
-                uniforms: { time: { value: 0 } },
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-                `,
-                fragmentShader: `
-                    varying vec2 vUv;
-                    uniform float time;
-                    void main() {
-                        vec3 topColor = vec3(0.0, 0.05, 0.2);
-                        vec3 horizonColor = vec3(0.0, 0.3, 0.6);
-                        vec3 color = mix(horizonColor, topColor, vUv.y);
-                        // slight shimmer
-                        float shimmer = 0.03 * sin(vUv.x * 20.0 + time * 0.5);
-                        color += shimmer;
-                        gl_FragColor = vec4(color, 1.0);
-                    }
-                `,
-                side: THREE.FrontSide,
-            });
-            const sky = new THREE.Mesh(skyGeo, skyMat);
-            sky.position.set(0, 10, -40);
-            scene.add(sky);
-
-            // Wave function
-            function wave(x, z, t) {
-                const a1 = 0.45 * Math.sin(0.4 * x + t * 0.9);
-                const a2 = 0.35 * Math.sin(0.35 * z + t * 0.7);
-                const a3 = 0.25 * Math.sin(0.25 * (x + z) + t * 1.1);
-                const a4 = 0.15 * Math.cos(0.5 * x - 0.3 * z + t * 1.3);
-                const a5 = 0.12 * Math.sin(0.7 * z - t * 0.6);
-                return a1 + a2 + a3 + a4 + a5;
-            }
-
-            // Resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            // Camera gentle bob
-            let camT = 0;
-
-            // Animate
-            function animate() {
-                requestAnimationFrame(animate);
-                const t = performance.now() * 0.001;
-
-                // Update wave vertices
-                const pos = oceanGeo.attributes.position;
-                for (let i = 0; i < pos.count; i++) {
-                    const x = pos.getX(i);
-                    const z = pos.getZ(i);
-                    pos.setY(i, wave(x, z, t));
-                }
-                pos.needsUpdate = true;
-                oceanGeo.computeVertexNormals();
-
-                // Animate foam (ride the waves)
-                const fp = foamGeo.attributes.position;
-                for (let i = 0; i < foamCount; i++) {
-                    const fx = fp.getX(i);
-                    const fz = fp.getZ(i);
-                    fp.setY(i, wave(fx, fz, t) + 0.1 + 0.05 * Math.sin(t * 3 + i));
-                }
-                fp.needsUpdate = true;
-
-                // Animate bubbles rising
-                const bp = bubbleGeo.attributes.position;
-                for (let i = 0; i < bubbleCount; i++) {
-                    let by = bp.getY(i) + bubbleSpeeds[i];
-                    if (by > 0.5) {
-                        by = -5;
-                        bp.setX(i, (Math.random() - 0.5) * 20);
-                        bp.setZ(i, (Math.random() - 0.5) * 20);
-                    }
-                    bp.setY(i, by);
-                }
-                bp.needsUpdate = true;
-
-                // Shimmer lights animate
-                shimmerLight.position.x = 8 * Math.sin(t * 0.5);
-                shimmerLight.position.z = 8 * Math.cos(t * 0.4);
-                shimmerLight.intensity = 2.5 + 1.5 * Math.sin(t * 2);
-
-                shimmerLight2.position.x = -6 * Math.cos(t * 0.3);
-                shimmerLight2.position.z = 6 * Math.sin(t * 0.6);
-
-                // Sky shader
-                skyMat.uniforms.time.value = t;
-
-                // Gentle camera bob
-                camT += 0.005;
-                camera.position.y = 4 + 0.3 * Math.sin(camT);
-                camera.position.x = 0.5 * Math.sin(camT * 0.5);
-                camera.lookAt(0, 0.5, 0);
-
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            // CSS Bubbles (overlay)
-            function spawnCSSBubble() {
-                const b = document.createElement('div');
-                b.className = 'bubble';
-                const size = 4 + Math.random() * 16;
-                b.style.width = size + 'px';
-                b.style.height = size + 'px';
-                b.style.left = (Math.random() * 100) + '%';
-                b.style.bottom = '0';
-                const dur = 6 + Math.random() * 10;
-                b.style.animationDuration = dur + 's';
-                b.style.animationDelay = (Math.random() * 5) + 's';
-                document.body.appendChild(b);
-                setTimeout(() => b.remove(), (dur + 5) * 1000);
-            }
-            for (let i = 0; i < 20; i++) spawnCSSBubble();
-            setInterval(spawnCSSBubble, 1500);
+        let camT = 0;
+        (function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            const pos = oceanGeo.attributes.position;
+            for (let i = 0; i < pos.count; i++) pos.setY(i, wave(pos.getX(i), pos.getZ(i), t));
+            pos.needsUpdate = true; oceanGeo.computeVertexNormals();
+            const fp = fGeo.attributes.position;
+            for (let i = 0; i < foamCount; i++) fp.setY(i, wave(fp.getX(i), fp.getZ(i), t) + 0.1 + 0.05*Math.sin(t*3+i));
+            fp.needsUpdate = true;
+            const bp = bGeo.attributes.position;
+            for (let i = 0; i < bCount; i++) { let by = bp.getY(i) + bSpd[i]; if (by > 0.5) { by = -5; bp.setX(i,(Math.random()-0.5)*20); bp.setZ(i,(Math.random()-0.5)*20); } bp.setY(i, by); }
+            bp.needsUpdate = true;
+            s1.position.x = 8*Math.sin(t*0.5); s1.position.z = 8*Math.cos(t*0.4); s1.intensity = 2.5+1.5*Math.sin(t*2);
+            s2.position.x = -6*Math.cos(t*0.3); s2.position.z = 6*Math.sin(t*0.6);
+            skyMat.uniforms.time.value = t;
+            camT += 0.005; camera.position.y = 4+0.3*Math.sin(camT); camera.position.x = 0.5*Math.sin(camT*0.5);
+            camera.lookAt(0, 0.5, 0);
+            renderer.render(scene, camera);
         })();
+
+        function spawnBubble() {
+            const b = document.createElement('div'); b.className = 'bubble';
+            const s = 4+Math.random()*16; b.style.width = s+'px'; b.style.height = s+'px';
+            b.style.left = (Math.random()*100)+'%'; b.style.bottom = '0';
+            const d = 6+Math.random()*10; b.style.animationDuration = d+'s'; b.style.animationDelay = (Math.random()*5)+'s';
+            document.body.appendChild(b); setTimeout(() => b.remove(), (d+5)*1000);
+        }
+        for (let i = 0; i < 20; i++) spawnBubble();
+        setInterval(spawnBubble, 1500);
+    })();
     </script>
 
+    <!-- MAIN LOGIC + MUSIC -->
     <script>
-        const prizes = [
-            { name: 'Saldo 100rb', value: 'Rp 100.000', icon: '💳' },
-            { name: 'Saldo 150rb', value: 'Rp 150.000', icon: '💰' },
-            { name: 'Saldo 200rb', value: 'Rp 200.000', icon: '💸' },
-            { name: 'Saldo 500rb', value: 'Rp 500.000', icon: '🤑' },
-            { name: 'Emas Batang 3gr', value: 'Emas 3 Gram', icon: '🥇' },
-            { name: 'iPhone 17 Pro Max', value: 'iPhone 17 Pro Max', icon: '📲' },
-            { name: 'MOTOR YAMAHA NMAX', value: 'MOTOR YAMAHA NMAX', icon: '🏍️' }
+        // ========== MAHJONG MUSIC ==========
+        let audioCtx = null;
+        let musicPlaying = false;
+        let musicTimer = null;
+
+        function getCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            return audioCtx;
+        }
+
+        // Pentatonic Chinese scale notes (Hz)
+        const N = {
+            G3:196.00, A3:220.00, C4:261.63, D4:293.66, E4:329.63,
+            G4:392.00, A4:440.00, C5:523.25, D5:587.33, E5:659.25,
+            G5:783.99, A5:880.00, C6:1046.50
+        };
+
+        // Mahjong melody — upbeat pentatonic Chinese game feel
+        const MELODY = [
+            {n:'G4',d:0.25},{n:'A4',d:0.25},{n:'C5',d:0.5},
+            {n:'A4',d:0.25},{n:'G4',d:0.25},{n:'E4',d:0.5},
+            {n:'G4',d:0.25},{n:'A4',d:0.25},{n:'C5',d:0.25},{n:'D5',d:0.25},
+            {n:'E5',d:0.5},{n:'D5',d:0.25},{n:'C5',d:0.25},
+            {n:'A4',d:0.5},{n:'G4',d:0.5},
+            {n:'C5',d:0.25},{n:'D5',d:0.25},{n:'E5',d:0.5},
+            {n:'G5',d:0.25},{n:'E5',d:0.25},{n:'D5',d:0.25},{n:'C5',d:0.25},
+            {n:'A4',d:0.25},{n:'G4',d:0.25},{n:'A4',d:0.5},
+            {n:'C5',d:0.75},{n:'A4',d:0.25},
+            {n:'G4',d:0.25},{n:'A4',d:0.25},{n:'C5',d:0.25},{n:'E5',d:0.25},
+            {n:'D5',d:0.25},{n:'C5',d:0.25},{n:'A4',d:0.5},
+            {n:'G4',d:0.25},{n:'C5',d:0.25},{n:'E5',d:0.25},{n:'G5',d:0.25},
+            {n:'A5',d:0.5},{n:'G5',d:0.25},{n:'E5',d:0.25},
+            {n:'D5',d:0.25},{n:'C5',d:0.25},{n:'A4',d:0.25},{n:'G4',d:0.25},
+            {n:'C5',d:1.0},
         ];
 
-        let stage = 'welcome';
-        let userId = '';
+        function pNote(freq, t, dur, type, vol, ctx) {
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.connect(g); g.connect(ctx.destination);
+            o.type = type; o.frequency.value = freq;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(vol, t + 0.02);
+            g.gain.setValueAtTime(vol, t + dur * 0.75);
+            g.gain.linearRampToValueAtTime(0, t + dur);
+            o.start(t); o.stop(t + dur + 0.05);
+        }
+
+        function pWoodblock(t, ctx) {
+            const buf = ctx.createBuffer(1, ctx.sampleRate * 0.07, ctx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.exp(-i/(ctx.sampleRate*0.012));
+            const src = ctx.createBufferSource();
+            const bpf = ctx.createBiquadFilter();
+            const g = ctx.createGain();
+            bpf.type = 'bandpass'; bpf.frequency.value = 900; bpf.Q.value = 3;
+            src.buffer = buf; src.connect(bpf); bpf.connect(g); g.connect(ctx.destination);
+            g.gain.setValueAtTime(0.1, t); src.start(t); src.stop(t + 0.08);
+        }
+
+        function pBell(freq, t, ctx) {
+            [1, 2.756].forEach(ratio => {
+                const o = ctx.createOscillator(), g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.type = 'sine'; o.frequency.value = freq * ratio;
+                g.gain.setValueAtTime(0.05, t);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.8);
+                o.start(t); o.stop(t + 1.9);
+            });
+        }
+
+        function scheduleLoop() {
+            if (!musicPlaying) return;
+            const ctx = getCtx();
+            const bpm = 132;
+            const beat = 60 / bpm;
+            const start = ctx.currentTime + 0.05;
+            let t = start;
+
+            // Main melody (triangle - soft flute-like)
+            MELODY.forEach(note => {
+                pNote(N[note.n], t, note.d * beat * 0.88, 'triangle', 0.11, ctx);
+                t += note.d * beat;
+            });
+
+            // Harmony (+5th, lower volume)
+            let ht = start;
+            MELODY.forEach(note => {
+                pNote(N[note.n] * 1.5, ht, note.d * beat * 0.5, 'sine', 0.04, ctx);
+                ht += note.d * beat;
+            });
+
+            // Bass (root notes, sine)
+            const bassSeq = [
+                {n:'C4',d:2},{n:'G3',d:2},{n:'A3',d:2},{n:'G3',d:2},
+                {n:'C4',d:2},{n:'G3',d:1},{n:'A3',d:1},{n:'C4',d:2},
+            ];
+            let bt = start;
+            bassSeq.forEach(note => {
+                pNote(N[note.n], bt, note.d * beat * 0.8, 'sine', 0.07, ctx);
+                bt += note.d * beat;
+            });
+
+            // Percussion - woodblock every beat, bell every 4
+            const totalBeats = 16;
+            for (let i = 0; i < totalBeats; i++) {
+                pWoodblock(start + i * beat, ctx);
+                if (i % 4 === 0) pBell(N['G5'], start + i * beat, ctx);
+                if (i % 8 === 4) pBell(N['E5'], start + i * beat, ctx);
+            }
+
+            // Schedule next loop
+            const loopDur = MELODY.reduce((s, n) => s + n.d * beat, 0);
+            musicTimer = setTimeout(scheduleLoop, (loopDur - 0.3) * 1000);
+        }
+
+        function startMusic() {
+            if (musicPlaying) return;
+            musicPlaying = true;
+            scheduleLoop();
+            document.getElementById('musicIcon').textContent = '🎶';
+            document.getElementById('musicToggle').classList.add('playing');
+        }
+
+        function stopMusic() {
+            musicPlaying = false;
+            clearTimeout(musicTimer);
+            document.getElementById('musicIcon').textContent = '🎵';
+            document.getElementById('musicToggle').classList.remove('playing');
+        }
+
+        // ========== RIPPLE ==========
+        function addRipple(btn, e) {
+            const r = btn.getBoundingClientRect();
+            const x = (e.clientX || r.left + r.width/2) - r.left;
+            const y = (e.clientY || r.top + r.height/2) - r.top;
+            const size = Math.max(r.width, r.height);
+            const rip = document.createElement('span');
+            rip.className = 'ripple';
+            rip.style.cssText = `width:${size}px;height:${size}px;left:${x-size/2}px;top:${y-size/2}px;`;
+            btn.appendChild(rip);
+            rip.addEventListener('animationend', () => rip.remove());
+        }
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.glass-btn,.glass-btn-music,.box-btn,.glass-btn-gold,.glass-btn-blue,.glass-btn-red');
+            if (btn) addRipple(btn, e);
+        });
+
+        // ========== NOTES ==========
+        function spawnNote(x, y) {
+            const el = document.createElement('div');
+            el.className = 'music-note';
+            el.textContent = ['♪','♫','♬','🎵','🎶'][Math.floor(Math.random()*5)];
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            el.style.color = `hsl(${30+Math.random()*60},100%,70%)`;
+            document.body.appendChild(el);
+            el.addEventListener('animationend', () => el.remove());
+        }
+
+        // ========== APP ==========
+        const prizes = [
+            { name:'Saldo 100rb', value:'Rp 100.000', icon:'💳' },
+            { name:'Saldo 150rb', value:'Rp 150.000', icon:'💰' },
+            { name:'Saldo 200rb', value:'Rp 200.000', icon:'💸' },
+            { name:'Saldo 500rb', value:'Rp 500.000', icon:'🤑' },
+            { name:'Emas Batang 3gr', value:'Emas 3 Gram', icon:'🥇' },
+            { name:'iPhone 17 Pro Max', value:'iPhone 17 Pro Max', icon:'📲' },
+            { name:'MOTOR YAMAHA NMAX', value:'MOTOR YAMAHA NMAX', icon:'🏍️' }
+        ];
+
+        let stage = 'welcome', userId = '';
         let claimedUsers = JSON.parse(localStorage.getItem("CLAIMED_USERS")) || [];
         let soundEnabled = true;
 
         function createSparkles() {
-            const container = document.getElementById('sparkles');
+            const c = document.getElementById('sparkles');
             for (let i = 0; i < 25; i++) {
-                const sparkle = document.createElement('div');
-                sparkle.textContent = ['✨','⭐','🌟','💫'][Math.floor(Math.random()*4)];
-                sparkle.className = 'sparkle animate-float';
-                sparkle.style.left = Math.random() * 100 + '%';
-                sparkle.style.top = Math.random() * 100 + '%';
-                sparkle.style.animationDelay = Math.random() * 5 + 's';
-                sparkle.style.animationDuration = (5 + Math.random() * 10) + 's';
-                sparkle.style.fontSize = (12 + Math.random() * 16) + 'px';
-                container.appendChild(sparkle);
+                const s = document.createElement('div');
+                s.textContent = ['✨','⭐','🌟','💫'][Math.floor(Math.random()*4)];
+                s.className = 'sparkle animate-float';
+                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+                s.style.animationDelay = Math.random()*5+'s';
+                s.style.animationDuration = (5+Math.random()*10)+'s';
+                s.style.fontSize = (12+Math.random()*16)+'px';
+                c.appendChild(s);
             }
         }
 
         function generateUsername() {
-            const prefixes = ['user_', 'member_', 'player_', 'lucky_', 'winner_', 'pro_', 'vip_', 'king_', 'ace_', 'star_'];
-            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-            const lastTwo = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-            return `${prefix}***${lastTwo}`;
+            const p = ['user_','member_','player_','lucky_','winner_','pro_','vip_','king_'];
+            return p[Math.floor(Math.random()*p.length)] + '***' + Math.floor(Math.random()*100).toString().padStart(2,'0');
         }
 
         function updateWinnerText() {
             let text = '';
-            const emojis = ['(˶ᵔ ᵕ ᵔ˶)😙', '(˶˃ ᵕ ˂˶)😎', '⸜(｡˃ ᵕ ˂ )✨', '>⩊<⭐', '◝(ᵔᗜᵔ)◜👑', 'ฅ^>⩊<^ ฅ🚀'];
-            for (let i = 0; i < 8; i++) {
-                const randomUser = generateUsername();
-                const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
-                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-                text += `${emoji} Selamat kepada ${randomUser} mendapatkan ${randomPrize.value}! `;
-            }
+            const em = ['(˶ᵔ ᵕ ᵔ˶)😙','(˶˃ ᵕ ˂˶)😎','⸜(｡˃ ᵕ ˂ )✨','>⩊<⭐','◝(ᵔᗜᵔ)◜👑'];
+            for (let i = 0; i < 8; i++)
+                text += `${em[Math.floor(Math.random()*em.length)]} Selamat kepada ${generateUsername()} mendapatkan ${prizes[Math.floor(Math.random()*prizes.length)].value}! `;
             document.getElementById('winnerText').textContent = text;
         }
 
         function playSound(type) {
             if (!soundEnabled) return;
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            if (type === 'click') {
-                osc.frequency.setValueAtTime(600, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                osc.start(); osc.stop(ctx.currentTime + 0.1);
-            } else if (type === 'win') {
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, index) => {
-                    setTimeout(() => {
-                        const o = ctx.createOscillator(); const g = ctx.createGain();
-                        o.connect(g); g.connect(ctx.destination);
-                        o.frequency.value = freq;
-                        g.gain.setValueAtTime(0.2, ctx.currentTime);
-                        g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                        o.start(); o.stop(ctx.currentTime + 0.3);
-                    }, index * 150);
-                });
-            }
+            const ctx = getCtx();
+            if (type === 'click') pNote(700, ctx.currentTime, 0.1, 'sine', 0.18, ctx);
+            else if (type === 'win') [523.25,659.25,783.99,1046.50].forEach((f,i) => setTimeout(() => pNote(f, ctx.currentTime, 0.3, 'triangle', 0.14, ctx), i*150));
         }
 
+        // RENDER
         function renderWelcome() {
             return `
-                <div class="text-center relative">
-                    <div class="mb-8 bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl animate-glow border-4 border-yellow-500">
-                        <div class="text-6xl md:text-8xl font-bold">
-                            <span class="text-yellow-500">AJAIB</span><span class="text-white">4D</span>
-                        </div>
+            <div class="text-center relative">
+                <div class="glass-panel-gold rounded-3xl p-8 mb-8 animate-glow">
+                    <div class="text-6xl md:text-8xl font-bold" style="font-family:'Cinzel',serif;">
+                        <span style="color:#fbbf24;">AJAIB</span><span class="text-white">4D</span>
                     </div>
-                    <div class="mb-6">
-                        <img src="https://imgur.com/xchHvkH.png" class="w-80 h-80 animate-pulse-gold mx-auto" onerror="this.style.display='none'">
-                    </div>
-                    <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-500 mb-3">
-                        HARTA KARUN
-                    </h1>
-                    <div class="flex items-center justify-center gap-3 mb-8">
-                        <div class="h-1 w-20 bg-gradient-to-r from-transparent to-yellow-500"></div>
-                        <span class="text-4xl text-yellow-500">﹏𓊝﹏</span>
-                        <div class="h-1 w-20 bg-gradient-to-l from-transparent to-yellow-500"></div>
-                    </div>
-                    <div class="bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md rounded-2xl p-6 mb-8 max-w-lg mx-auto border-2 border-yellow-500 shadow-2xl">
-                        <p class="text-white text-lg md:text-xl font-medium leading-relaxed">
-                            ⚓ HADIAH SPECIAL ⚓<br/>
-                            <span class="text-yellow-400">LAKUKAN SPIN & MASUKAN USER ID</span><br/>
-                            <span class="text-sm text-gray-300">Dapatkan Hadiah Besarmu segera</span>
-                        </p>
-                    </div>
-                    <button id="showPrizesBtn" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-4 px-12 rounded-full text-lg shadow-2xl transform hover:scale-105 transition mb-6 border-2 border-blue-400">
-                        ☠ LIST HADIAH ☠
-                    </button>
-                    <br/>
-                    <button id="startBtn" class="bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-5 px-16 rounded-full text-2xl shadow-2xl transform hover:scale-110 transition animate-pulse-gold border-4 border-yellow-400">
-                        ╰┈➤  KLIK DISINI ✗
-                    </button>
                 </div>
-            `;
+                <div class="mb-6">
+                    <img src="https://imgur.com/xchHvkH.png" class="w-64 h-64 animate-pulse-gold mx-auto" style="filter:drop-shadow(0 0 20px rgba(234,179,8,0.5));" onerror="this.style.display='none'">
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-3" style="font-family:'Cinzel',serif;background:linear-gradient(135deg,#fbbf24,#fde68a,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                    HARTA KARUN
+                </h1>
+                <div class="flex items-center justify-center gap-3 mb-8">
+                    <div class="h-px w-20" style="background:linear-gradient(90deg,transparent,rgba(234,179,8,0.8));"></div>
+                    <span class="text-3xl" style="color:#fbbf24;">﹏𓊝﹏</span>
+                    <div class="h-px w-20" style="background:linear-gradient(270deg,transparent,rgba(234,179,8,0.8));"></div>
+                </div>
+                <div class="glass-panel-gold rounded-2xl p-6 mb-8 max-w-lg mx-auto">
+                    <p class="text-lg md:text-xl font-medium leading-relaxed" style="color:#fde68a;">
+                        ⚓ HADIAH SPECIAL ⚓<br/>
+                        <span style="color:#fbbf24;font-weight:900;">LAKUKAN SPIN & MASUKAN USER ID</span><br/>
+                        <span style="font-size:13px;color:rgba(253,230,138,0.55);">Dapatkan Hadiah Besarmu segera</span>
+                    </p>
+                </div>
+                <button id="showPrizesBtn" class="glass-btn glass-btn-blue py-4 px-12 rounded-full text-lg mb-6" style="display:inline-block;">
+                    ☠ LIST HADIAH ☠
+                </button>
+                <br/>
+                <button id="startBtn" class="glass-btn glass-btn-gold py-5 px-16 rounded-full text-2xl animate-pulse-gold" style="display:inline-block;margin-top:10px;">
+                    ╰┈➤ &nbsp;KLIK DISINI ✗
+                </button>
+            </div>`;
         }
 
         function renderInput() {
             return `
-                <div class="relative">
-                    <div class="bg-gradient-to-br from-gray-800/90 to-black/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl max-w-md w-full border-4 border-yellow-500">
-                        <div class="text-center mb-6">
-                            <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">Masukkan User ID Mu</h2>
-                            <p class="text-gray-400 text-sm">Untuk mengklaim hadiah</p>
-                        </div>
-                        <input type="text" id="userIdInput" placeholder="Contoh: user_***88" class="w-full px-5 py-4 border-2 border-yellow-500 rounded-xl mb-4 text-lg focus:border-yellow-400 focus:outline-none bg-gray-900 text-white placeholder-gray-400">
-                        <div id="errorMsg" class="hidden bg-red-900 border-2 border-red-500 text-red-200 px-4 py-3 rounded-lg mb-4 text-sm"></div>
-                        <button id="continueBtn" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-4 rounded-xl text-xl shadow-lg transform hover:scale-105 transition border-2 border-yellow-400">
-                            ✨ Lanjutkan
-                        </button>
+            <div class="relative">
+                <div class="glass-panel-gold rounded-3xl p-8 max-w-md w-full">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2" style="font-family:'Cinzel',serif;color:#fbbf24;">Masukkan User ID Mu</h2>
+                        <p style="color:rgba(253,230,138,0.5);font-size:13px;">Untuk mengklaim hadiah</p>
                     </div>
+                    <input type="text" id="userIdInput" placeholder="Contoh: user_***88"
+                        class="w-full px-5 py-4 rounded-xl mb-4 text-lg focus:outline-none font-bold"
+                        style="background:rgba(255,255,255,0.06);border:1px solid rgba(234,179,8,0.35);backdrop-filter:blur(10px);color:#fde68a;">
+                    <div id="errorMsg" class="hidden px-4 py-3 rounded-lg mb-4 text-sm font-bold"
+                         style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;"></div>
+                    <button id="continueBtn" class="glass-btn glass-btn-gold w-full py-4 rounded-xl text-xl">✨ Lanjutkan</button>
                 </div>
-            `;
+            </div>`;
         }
 
         function renderBoxSelection() {
             let boxes = '';
             for (let i = 0; i < 9; i++) {
-                boxes += `
-                    <button class="box-btn aspect-square bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-400 rounded-2xl shadow-2xl transform transition duration-300 border-4 border-yellow-400 flex flex-col items-center justify-center p-2 hover:scale-110 hover:rotate-6 cursor-pointer" data-index="${i}">
-                        <div class="text-lg md:text-2xl font-bold mb-2">
-                            <span class="text-black">AJAIB</span><span class="text-white">4D</span>
-                        </div>
-                        <span class="text-4xl md:text-5xl">⚔️</span>
-                    </button>
-                `;
+                boxes += `<button class="box-btn aspect-square rounded-2xl flex flex-col items-center justify-center p-2" data-index="${i}">
+                    <div class="text-lg font-bold mb-1" style="font-family:'Cinzel',serif;">
+                        <span style="color:#fbbf24;">AJAIB</span><span class="text-white">4D</span>
+                    </div>
+                    <span class="text-4xl md:text-5xl">⚔️</span>
+                    <div style="color:rgba(253,230,138,0.45);font-size:11px;font-weight:800;margin-top:4px;">PILIH</div>
+                </button>`;
             }
             return `
-                <div class="text-center relative">
-                    <div class="bg-gradient-to-br from-gray-800/80 to-black/80 backdrop-blur-md rounded-2xl p-6 mb-8 border-2 border-yellow-500">
-                        <h2 class="text-2xl md:text-3xl font-bold text-yellow-400">
-                            ⚔️ PILIH SATU BOX JARAHANMU ⚔️
-                        </h2>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4 md:gap-6 max-w-2xl mx-auto">
-                        ${boxes}
-                    </div>
+            <div class="text-center relative">
+                <div class="glass-panel-gold rounded-2xl p-6 mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold" style="font-family:'Cinzel',serif;color:#fbbf24;">⚔️ PILIH SATU BOX JARAHANMU ⚔️</h2>
                 </div>
-            `;
+                <div class="grid grid-cols-3 gap-4 md:gap-6 max-w-2xl mx-auto">${boxes}</div>
+            </div>`;
         }
 
         function renderResult(prize) {
             const uid = localStorage.getItem("USER_ID") || "Unknown";
             return `
-                <div class="relative">
-                    <div class="bg-gradient-to-br from-gray-800/90 to-black/90 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full text-center border-4 border-yellow-500">
-                        <div class="absolute top-4 left-4 bg-green-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg">
-                            User ID: ${uid}
-                        </div>
-                        <div class="text-3xl mb-6 animate-bounce mt-8">${prize.icon}</div>
-                        <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-300 mb-3">
-                            SELAMAT! 🎉
-                        </h2>
-                        <p class="text-xl text-gray-300 mb-4">Anda mendapatkan:</p>
-                        <div class="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black py-6 px-6 rounded-2xl mb-6 shadow-xl border-4 border-yellow-400">
-                            <p class="text-3xl font-bold">${prize.value}</p>
-                        </div>
-                        <p class="text-sm text-gray-400 mb-6">💬 Klaim hadiah sekarang juga!</p>
-                        <button id="claimBtn" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-4 rounded-xl text-xl mb-3 shadow-lg transform hover:scale-105 transition border-2 border-yellow-400">
-                            🎁 Klaim Hadiah Sekarang
-                        </button>
-                        <button id="resetBtn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base transition border-2 border-gray-500">
-                            🏠 Kembali ke Halaman Utama
-                        </button>
+            <div class="relative">
+                <div class="glass-panel-gold rounded-3xl p-8 md:p-12 max-w-md w-full text-center">
+                    <div class="absolute top-4 left-4 rounded-xl font-bold px-4 py-2"
+                         style="background:rgba(34,197,94,0.2);border:1px solid rgba(134,239,172,0.4);color:#86efac;backdrop-filter:blur(10px);">
+                        User ID: ${uid}
                     </div>
+                    <div class="text-5xl mb-6 animate-bounce mt-10">${prize.icon}</div>
+                    <h2 class="text-4xl font-bold mb-3" style="font-family:'Cinzel',serif;color:#fbbf24;">SELAMAT! 🎉</h2>
+                    <p class="text-xl mb-4" style="color:rgba(253,230,138,0.65);">Anda mendapatkan:</p>
+                    <div class="rounded-2xl mb-6 py-6 px-6" style="background:linear-gradient(135deg,rgba(234,179,8,0.25),rgba(80,40,0,0.18));border:1px solid rgba(234,179,8,0.5);box-shadow:0 0 25px rgba(234,179,8,0.15);">
+                        <p class="text-3xl font-bold" style="font-family:'Cinzel',serif;color:#fde68a;">${prize.value}</p>
+                    </div>
+                    <p class="text-sm mb-6" style="color:rgba(253,230,138,0.45);">💬 Klaim hadiah sekarang juga!</p>
+                    <button id="claimBtn" class="glass-btn glass-btn-gold w-full py-4 rounded-xl text-xl mb-3">🎁 Klaim Hadiah Sekarang</button>
+                    <button id="resetBtn" class="glass-btn w-full py-3 rounded-xl text-base">🏠 Kembali ke Halaman Utama</button>
                 </div>
-            `;
+            </div>`;
         }
 
         function render() {
             const app = document.getElementById('app');
             if (stage === 'welcome') {
                 app.innerHTML = renderWelcome();
-                document.getElementById('startBtn').onclick = () => { playSound('click'); stage = 'input'; render(); };
-                document.getElementById('showPrizesBtn').onclick = () => { playSound('click'); showPrizeModal(); };
+                document.getElementById('startBtn').onclick = e => { playSound('click'); if(musicPlaying) spawnNote(e.clientX,e.clientY); stage='input'; render(); };
+                document.getElementById('showPrizesBtn').onclick = e => { playSound('click'); showPrizeModal(); };
             } else if (stage === 'input') {
                 app.innerHTML = renderInput();
-                document.getElementById('continueBtn').onclick = () => {
+                document.getElementById('continueBtn').onclick = e => {
                     playSound('click');
-                    const inputValue = document.getElementById('userIdInput').value.trim();
-                    const errorMsg = document.getElementById('errorMsg');
-                    if (!inputValue) { errorMsg.textContent = '⚠️ Silahkan masukkan User ID Anda!'; errorMsg.classList.remove('hidden'); return; }
-                    const normalizedUserId = inputValue.toLowerCase();
-                    if (claimedUsers.includes(normalizedUserId)) { errorMsg.textContent = '⚠️ User ID ini sudah pernah mengklaim hadiah!'; errorMsg.classList.remove('hidden'); return; }
-                    userId = normalizedUserId;
-                    localStorage.setItem("USER_ID", userId);
-                    claimedUsers.push(normalizedUserId);
-                    localStorage.setItem("CLAIMED_USERS", JSON.stringify(claimedUsers));
+                    const v = document.getElementById('userIdInput').value.trim();
+                    const err = document.getElementById('errorMsg');
+                    if (!v) { err.textContent = '⚠️ Silahkan masukkan User ID Anda!'; err.classList.remove('hidden'); return; }
+                    const n = v.toLowerCase();
+                    if (claimedUsers.includes(n)) { err.textContent = '⚠️ User ID ini sudah pernah mengklaim hadiah!'; err.classList.remove('hidden'); return; }
+                    userId = n; localStorage.setItem("USER_ID", userId);
+                    claimedUsers.push(n); localStorage.setItem("CLAIMED_USERS", JSON.stringify(claimedUsers));
                     stage = 'select'; render();
                 };
             } else if (stage === 'select') {
                 app.innerHTML = renderBoxSelection();
                 document.querySelectorAll('.box-btn').forEach(btn => {
-                    btn.onclick = function() {
+                    btn.onclick = function(e) {
                         playSound('click');
-                        this.classList.add('scale-125', 'rotate-12', 'animate-pulse');
+                        if(musicPlaying) { spawnNote(e.clientX-10,e.clientY-10); spawnNote(e.clientX+10,e.clientY-20); }
+                        this.style.transform = 'scale(1.35) rotate(12deg)';
+                        this.style.boxShadow = '0 0 60px rgba(234,179,8,0.8)';
+                        this.style.borderColor = 'rgba(234,179,8,1)';
                         document.querySelectorAll('.box-btn').forEach(b => b.disabled = true);
                         setTimeout(() => {
-                            const realPrizes = [
-                                { name: 'Saldo 100rb', value: 'Rp 100.000', icon: '💸' },
-                                { name: 'Saldo 150rb', value: 'Rp 150.000', icon: '💸' },
-                                { name: 'Saldo 200rb', value: 'Rp 200.000', icon: '💸' },
-                                { name: 'Saldo 500rb', value: 'Rp 500.000', icon: '💸' }
+                            const rp = [
+                                {name:'Saldo 100rb',value:'Rp 100.000',icon:'💸'},
+                                {name:'Saldo 150rb',value:'Rp 150.000',icon:'💸'},
+                                {name:'Saldo 200rb',value:'Rp 200.000',icon:'💸'},
+                                {name:'Saldo 500rb',value:'Rp 500.000',icon:'💸'}
                             ];
-                            const prize = realPrizes[Math.floor(Math.random() * realPrizes.length)];
+                            const prize = rp[Math.floor(Math.random()*rp.length)];
                             playSound('win');
                             stage = 'result';
                             app.innerHTML = renderResult(prize);
-                            document.getElementById('claimBtn').onclick = () => { playSound('click'); window.open('https://one.ajaibraih.com/', '_blank'); };
-                            document.getElementById('resetBtn').onclick = () => { playSound('click'); stage = 'welcome'; userId = ''; render(); };
+                            document.getElementById('claimBtn').onclick = () => { playSound('click'); window.open('https://one.ajaibraih.com/','_blank'); };
+                            document.getElementById('resetBtn').onclick = () => { playSound('click'); stage='welcome'; userId=''; render(); };
                         }, 1500);
                     };
                 });
@@ -715,34 +756,39 @@
         }
 
         function showPrizeModal() {
-            const modal = document.getElementById('prizeModal');
-            const prizeList = document.getElementById('prizeList');
-            prizeList.innerHTML = prizes.map(prize => `
-                <div class="bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-2xl p-6 border-4 border-yellow-400 shadow-xl">
-                    <div class="text-center">
-                        <div class="text-6xl mb-3">${prize.icon}</div>
-                        <h3 class="text-xl font-bold text-black mb-2">${prize.name}</h3>
-                        <div class="bg-black bg-opacity-30 rounded-lg py-2 px-4">
-                            <p class="text-2xl font-bold text-white">${prize.value}</p>
-                        </div>
+            document.getElementById('prizeList').innerHTML = prizes.map(p => `
+                <div class="glass-panel-gold rounded-2xl p-5 text-center">
+                    <div class="text-5xl mb-2">${p.icon}</div>
+                    <h3 class="text-lg font-bold mb-2" style="color:#fbbf24;">${p.name}</h3>
+                    <div class="rounded-lg py-2 px-4" style="background:rgba(0,0,0,0.3);border:1px solid rgba(234,179,8,0.2);">
+                        <p class="text-xl font-bold" style="color:#fde68a;">${p.value}</p>
                     </div>
-                </div>
-            `).join('');
-            modal.classList.remove('hidden');
+                </div>`).join('');
+            document.getElementById('prizeModal').classList.remove('hidden');
         }
 
+        // Controls
         document.getElementById('soundToggle').onclick = () => {
             soundEnabled = !soundEnabled;
             document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
         };
+        document.getElementById('musicToggle').onclick = e => {
+            if (musicPlaying) { stopMusic(); }
+            else { startMusic(); spawnNote(e.clientX-15, e.clientY-15); spawnNote(e.clientX+15, e.clientY-25); }
+        };
         document.getElementById('liveChatBtn').onclick = () => {
             playSound('click');
-            window.open('https://static.zdassets.com/web_widget/latest/liveChat.html?v=10#key=hokiajaib4d.zendesk.com', '_blank');
+            window.open('https://static.zdassets.com/web_widget/latest/liveChat.html?v=10#key=hokiajaib4d.zendesk.com','_blank');
         };
         document.getElementById('closePrizeModal').onclick = () => {
             playSound('click');
             document.getElementById('prizeModal').classList.add('hidden');
         };
+
+        // Ambient notes when music is on
+        setInterval(() => {
+            if (musicPlaying) spawnNote(Math.random()*window.innerWidth, window.innerHeight*0.3 + Math.random()*window.innerHeight*0.5);
+        }, 900);
 
         createSparkles();
         updateWinnerText();
